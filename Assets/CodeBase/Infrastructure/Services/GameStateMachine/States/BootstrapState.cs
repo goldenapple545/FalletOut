@@ -1,17 +1,19 @@
-﻿namespace CodeBase.Infrastructure.Services.GameStateMachine.States
+﻿using System;
+
+namespace CodeBase.Infrastructure.Services.GameStateMachine.States
 {
     public sealed class BootstrapState : IState
     {
-        private readonly IGameStateMachine _gameStateMachine;
+        private readonly Action<Type> _enter;
 
-        public BootstrapState(IGameStateMachine gameStateMachine)
+        public BootstrapState(Action<Type> enter)
         {
-            _gameStateMachine = gameStateMachine;
+            _enter = enter;
         }
 
         public void Enter()
         {
-            _gameStateMachine.Enter<GameLoopState>();
+            _enter(typeof(GameLoopState));
         }
 
         public void Exit()

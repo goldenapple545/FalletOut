@@ -9,23 +9,24 @@ namespace CodeBase.Infrastructure.Services.GameStateMachine
         private readonly Dictionary<Type, IState> _states;
         private IState _currentState;
 
-        public GameStateMachine(
-            BootstrapState bootstrapState,
-            GameLoopState GameLoopState)
+        public GameStateMachine()
         {
-            _states = new Dictionary<Type, IState>
-            {
-                [typeof(BootstrapState)] = bootstrapState,
-                [typeof(GameLoopState)] = GameLoopState
-            };
+            _states = new Dictionary<Type, IState>();
+
+            _states[typeof(BootstrapState)] = new BootstrapState(EnterByType);
+            _states[typeof(GameLoopState)] = new GameLoopState();
         }
 
         public void Enter<TState>() where TState : class, IState
         {
-            if (_currentState != null)
-                _currentState.Exit();
+            EnterByType(typeof(TState));
+        }
 
-            var state = (TState)_states[typeof(TState)];
+        private void EnterByType(Type stateType)
+        {
+            _currentState?.Exit();
+
+            IState state = _states[stateType];
             _currentState = state;
             state.Enter();
         }

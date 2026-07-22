@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Threading;
 using CodeBase.Infrastructure;
 using CodeBase.Infrastructure.BootstrapSteps;
+using UnityEngine;
 using Zenject;
 
 public sealed class AppBootstrapper : IInitializable, IDisposable
