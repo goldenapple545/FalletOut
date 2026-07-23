@@ -1,4 +1,4 @@
-﻿using CodeBase.Gameplay.Network;
+﻿using UnityEngine;
 using Zenject;
 
 namespace CodeBase.Gameplay.Network.UI
@@ -16,6 +16,7 @@ namespace CodeBase.Gameplay.Network.UI
             HostLobbyView hostView,
             ClientLobbyView clientView)
         {
+            Debug.Log($"[LobbyScreenController]: constrcu");
             _lobbyService = lobbyService;
             _browserView = browserView;
             _hostView = hostView;
@@ -24,6 +25,7 @@ namespace CodeBase.Gameplay.Network.UI
 
         public void Initialize()
         {
+            Debug.Log($"[LobbyScreenController]: init");
             _lobbyService.ModeChanged += OnLobbyModeChanged;
             ApplyMode(_lobbyService.Mode);
         }
@@ -38,6 +40,7 @@ namespace CodeBase.Gameplay.Network.UI
 
         private void ApplyMode(LobbyMode mode)
         {
+            Debug.Log($"[LobbyScreenController]: Apply mode {mode}");
             _browserView.Hide();
             _hostView.Hide();
             _clientView.Hide();

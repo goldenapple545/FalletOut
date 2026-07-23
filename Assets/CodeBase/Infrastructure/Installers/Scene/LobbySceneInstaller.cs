@@ -18,6 +18,10 @@ namespace CodeBase.Infrastructure.Installers.Scene
             Container.Bind<ClientLobbyView>()
                 .FromComponentInHierarchy()
                 .AsSingle();
+
+            Container.BindInterfacesAndSelfTo<LobbyScreenController>()
+                .AsSingle()
+                .NonLazy();
         }
     }
 }

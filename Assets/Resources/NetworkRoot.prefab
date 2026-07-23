@@ -128,12 +128,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 94c86391d851499893ab7ee36efc7ab1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CodeBase.Gameplay.Network.NameLanDiscoveryTransport
-  secret: 
-  port: 0
-  searchTimeout: 0
+  secret: CarCombat
+  port: 47777
+  searchTimeout: 3
   automatic: 0
-  needLog: 0
-  maxPlayers: 2
+  needLog: 1
+  maxPlayers: 6
 --- !u!114 &6332011728052953633 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 7443408887813606050, guid: 0b650fca685f2eb41a86538aa883e4c1, type: 3}
