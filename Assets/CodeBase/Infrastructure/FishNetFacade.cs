@@ -1,5 +1,4 @@
-﻿using CodeBase.Infrastructure.BootstrapSteps.Network;
-using FishNet.Managing;
+﻿using CodeBase.Gameplay.Network;
 
 public interface IFishNetFacade
 {

@@ -2,7 +2,7 @@
 using UnityEngine;
 using Zenject;
 
-namespace CodeBase.Infrastructure.BootstrapSteps.Network
+namespace CodeBase.Gameplay.Network
 {
     public sealed class NetworkRuntimeRoot : MonoBehaviour
     {

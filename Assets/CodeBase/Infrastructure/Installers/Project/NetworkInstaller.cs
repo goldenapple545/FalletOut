@@ -1,4 +1,4 @@
-﻿using CodeBase.Infrastructure.BootstrapSteps.Network;
+﻿using CodeBase.Gameplay.Network;
 using CodeBase.Infrastructure.Services.Session;
 using UnityEngine;
 using Zenject;
@@ -16,7 +16,18 @@ namespace CodeBase.Infrastructure.Installers.Project
                 .AsSingle()
                 .NonLazy();
 
-            Container.Bind<ISessionService>().To<SessionService>().AsSingle();
+            Container.Bind<NameLanDiscoveryTransport>()
+                .FromMethod(_ => Container.Resolve<NetworkRuntimeRoot>()
+                    .GetComponentInChildren<NameLanDiscoveryTransport>())
+                .AsSingle();
+
+            Container.Bind<LobbySessionService>()
+                .AsSingle()
+                .NonLazy();
+            
+            Container.BindInterfacesAndSelfTo<SessionService>()
+                .AsSingle()
+                .NonLazy();
         }
     }
 }
