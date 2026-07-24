@@ -1,4 +1,5 @@
-﻿using TMPro;
+﻿using CodeBase.Gameplay.Network.Match;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using Zenject;
@@ -14,11 +15,13 @@ namespace CodeBase.Gameplay.Network.UI
         [SerializeField] private Button startMatchButton;
 
         private LobbySessionService _lobbyService;
+        private IMatchSceneService _matchSceneService;
 
         [Inject]
-        private void Construct(LobbySessionService lobbyService)
+        private void Construct(LobbySessionService lobbyService, IMatchSceneService matchSceneService)
         {
             _lobbyService = lobbyService;
+            _matchSceneService = matchSceneService;
         }
 
         private void OnEnable()
@@ -62,10 +65,13 @@ namespace CodeBase.Gameplay.Network.UI
 
         private void StartMatch()
         {
-            // На данном этапе кнопка только подтверждает flow.
-            // Дальше здесь будет _matchStartService.RequestStartMatch().
             SetStatus("Подготовка матча...");
             startMatchButton.interactable = false;
+            
+            if (_lobbyService.IsTransitioning)
+                return;
+
+            _matchSceneService.StartMatch();
         }
 
         private void OnModeChanged(LobbyMode mode)
