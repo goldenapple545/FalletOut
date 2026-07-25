@@ -937,6 +937,7 @@ GameObject:
   - component: {fileID: 412961462541341605}
   - component: {fileID: 1647915377611270883}
   - component: {fileID: 7337860785728103422}
+  - component: {fileID: 6980634714996958839}
   m_Layer: 0
   m_Name: Prometheus
   m_TagString: Untagged
@@ -1183,6 +1184,23 @@ MonoBehaviour:
     X: 0
     Y: 0
     Z: 0
+--- !u!114 &6980634714996958839
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5751675616803937464}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c98dbe927d6c4315b01af6117d0f4020, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CodeBase.Gameplay.Car.Input.VehicleLocalControlsSpawner
+  _componentIndexCache: 255
+  _addedNetworkObject: {fileID: 2264628392054573976}
+  _networkObjectCache: {fileID: 0}
+  inputSource: {fileID: 3112220271104262623}
+  touchControlsPrefab: {fileID: 2420325512756593320, guid: d0fc1ac7d5cec1f4d9df75831c8439d4, type: 3}
 --- !u!1 &6437896498010677365
 GameObject:
   m_ObjectHideFlags: 0

@@ -1,5 +1,7 @@
-﻿using UnityEngine;
+﻿using CodeBase.Data;
+using UnityEngine;
 using UnityEngine.InputSystem;
+using Zenject;
 
 namespace CodeBase.Gameplay.Car.Input
 {
@@ -8,37 +10,60 @@ namespace CodeBase.Gameplay.Car.Input
         private float _touchThrottle;
         private float _touchSteering;
         private bool _touchHandbrake;
+        
+        private BuildConfig _buildConfig;
 
-        public VehicleInput ReadInput()
+        [Inject]
+        private void Construct(BuildConfig buildConfig)
         {
-            float throttle = _touchThrottle;
-            float steering = _touchSteering;
-            bool handbrake = _touchHandbrake;
-
-            if (Keyboard.current != null)
+            _buildConfig = buildConfig;
+        }
+        
+        public VehicleInput Read()
+        {
+            if (_buildConfig.IsAndroid)
             {
-                throttle += Keyboard.current.wKey.isPressed ? 1f : 0f;
-                throttle -= Keyboard.current.sKey.isPressed ? 1f : 0f;
-
-                steering += Keyboard.current.dKey.isPressed ? 1f : 0f;
-                steering -= Keyboard.current.aKey.isPressed ? 1f : 0f;
-
-                handbrake |= Keyboard.current.spaceKey.isPressed;
+                return new VehicleInput(
+                    _touchThrottle,
+                    _touchSteering,
+                    _touchHandbrake);
             }
 
-            return new VehicleInput(
-                Mathf.Clamp(throttle, -1f, 1f),
-                Mathf.Clamp(steering, -1f, 1f),
-                handbrake);
+            return ReadKeyboard();
         }
 
-        public void SetThrottle(float value) =>
+        public void SetTouchThrottle(float value) =>
             _touchThrottle = Mathf.Clamp(value, -1f, 1f);
 
-        public void SetSteering(float value) =>
+        public void SetTouchSteering(float value) =>
             _touchSteering = Mathf.Clamp(value, -1f, 1f);
 
-        public void SetHandbrake(bool value) =>
+        public void SetTouchHandbrake(bool value) =>
             _touchHandbrake = value;
+        
+        public void ResetTouch()
+        {
+            _touchThrottle = 0f;
+            _touchSteering = 0f;
+            _touchHandbrake = false;
+        }
+        
+        private VehicleInput ReadKeyboard()
+        {
+            if (Keyboard.current == null)
+                return VehicleInput.Neutral;
+
+            float throttle =
+                (Keyboard.current.wKey.isPressed ? 1f : 0f) -
+                (Keyboard.current.sKey.isPressed ? 1f : 0f);
+
+            float steering =
+                (Keyboard.current.dKey.isPressed ? 1f : 0f) -
+                (Keyboard.current.aKey.isPressed ? 1f : 0f);
+
+            bool handbrake = Keyboard.current.spaceKey.isPressed;
+
+            return new VehicleInput(throttle, steering, handbrake);
+        }
     }
 }

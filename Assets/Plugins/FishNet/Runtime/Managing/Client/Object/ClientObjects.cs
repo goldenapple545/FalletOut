@@ -48,6 +48,14 @@ namespace FishNet.Managing.Client
         private static readonly ProfilerMarker _pm_IterateObjectCache = new("ClientObjects.IterateObjectCache()");
         #endregion
 
+        public event Action<NetworkObject> OnBeforeSpawn;
+        
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal void RaiseOnBeforeSpawn(NetworkObject nob)
+        {
+            OnBeforeSpawn?.Invoke(nob);
+        }
+        
         internal ClientObjects(NetworkManager networkManager)
         {
             base.Initialize(networkManager);
@@ -745,6 +753,14 @@ namespace FishNet.Managing.Client
                 ObjectPoolRetrieveOption retrieveOptions = ObjectPoolRetrieveOption.MakeActive | ObjectPoolRetrieveOption.LocalSpace;
                 result = networkManager.GetPooledInstantiated(prefabId, collectionId, retrieveOptions, parentTransform, cnob.Position, cnob.Rotation, cnob.Scale, asServer: false);
 
+                if (result == null)
+                {
+                    networkManager.LogError($"Pooled instantiation returned null for prefabId {prefabId}.");
+                    return null;
+                }
+
+                RaiseOnBeforeSpawn(result);
+                
                 //Only need to set IsGlobal also if not host.
                 bool isGlobal = cnob.SpawnType.FastContains(SpawnType.InstantiatedGlobal);
                 result.SetIsGlobal(isGlobal);

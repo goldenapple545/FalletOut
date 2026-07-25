@@ -3,6 +3,7 @@ using FishNet.Connection;
 using FishNet.Managing.Scened;
 using FishNet.Object;
 using UnityEngine;
+using Zenject;
 
 namespace CodeBase.Gameplay.Spawn
 {
@@ -14,6 +15,14 @@ namespace CodeBase.Gameplay.Spawn
 
         private readonly Dictionary<int, NetworkObject> _vehiclesByClientId = new();
 
+        private DiContainer _projectContainer;
+
+        [Inject]
+        private void Construct(DiContainer projectContainer)
+        {
+            _projectContainer = projectContainer;
+        }
+        
         public override void OnStartServer()
         {
             base.OnStartServer();
@@ -86,6 +95,8 @@ namespace CodeBase.Gameplay.Spawn
                 spawnPoint.position,
                 spawnPoint.rotation);
 
+            _projectContainer.InjectGameObject(vehicle.gameObject);
+            
             ServerManager.Spawn(vehicle, connection);
 
             _vehiclesByClientId.Add(connection.ClientId, vehicle);

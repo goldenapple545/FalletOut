@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace CodeBase.Infrastructure.BootstrapSteps.StaticData.Configs
+namespace CodeBase.Data
 {
     [CreateAssetMenu(
         fileName = "VehicleConfig",

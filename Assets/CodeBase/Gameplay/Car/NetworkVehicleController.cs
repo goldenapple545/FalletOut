@@ -16,7 +16,7 @@ namespace CodeBase.Gameplay.Car
             if (!IsOwner)
                 return;
 
-            _latestInput = inputSource.ReadInput();
+            _latestInput = inputSource.Read();
             SendInputToServer(_latestInput);
         }
 
