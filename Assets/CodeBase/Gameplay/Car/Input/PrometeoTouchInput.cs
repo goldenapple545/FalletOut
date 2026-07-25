@@ -1,9 +1,9 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
-public class PrometeoTouchInput : MonoBehaviour
+namespace CodeBase.Gameplay.Car.Input
 {
+  public class PrometeoTouchInput : MonoBehaviour
+  {
 
     public bool changeScaleOnPressed = false;
     [HideInInspector]
@@ -31,4 +31,5 @@ public class PrometeoTouchInput : MonoBehaviour
       }
     }
 
+  }
 }

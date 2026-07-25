@@ -861,7 +861,7 @@ MonoBehaviour:
   _componentIndexCache: 255
   _addedNetworkObject: {fileID: 981355579}
   _networkObjectCache: {fileID: 0}
-  vehiclePrefab: {fileID: 7685844937328849734, guid: af760f32c5bdd6f4b86bd1c449cc5cce, type: 3}
+  vehiclePrefab: {fileID: 2264628392054573976, guid: 6050a4a0d22506849b26039d897c6749, type: 3}
   spawnRegistry: {fileID: 888987128}
 --- !u!1 &655077956
 GameObject:
