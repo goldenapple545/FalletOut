@@ -1,7 +1,9 @@
 ﻿using CodeBase.Data;
+using CodeBase.Infrastructure.Services.SceneLoader;
 using FishNet.Object;
 using UnityEngine;
 using Zenject;
+using UnityEngine.SceneManagement;
 
 namespace CodeBase.Gameplay.Car.Input
 {
@@ -12,11 +14,14 @@ namespace CodeBase.Gameplay.Car.Input
 
         private BuildConfig _buildConfig;
         private VehicleTouchControlsView _spawnedControls;
+        private IGameplaySceneLifecycle _sceneLifecycle;
+        private bool _isLocalOwner;
 
         [Inject]
-        private void Construct(BuildConfig buildConfig)
+        private void Construct(BuildConfig buildConfig, IGameplaySceneLifecycle sceneLifecycle)
         {
             _buildConfig = buildConfig;
+            _sceneLifecycle = sceneLifecycle;
         }
 
         public override void OnStartClient()
@@ -25,22 +30,39 @@ namespace CodeBase.Gameplay.Car.Input
 
             if (!IsOwner || !_buildConfig.IsAndroid)
                 return;
+            
+            _isLocalOwner = true;
+            
+            _sceneLifecycle.GameplaySceneReady += OnGameplaySceneReady;
+            _sceneLifecycle.GameplaySceneUnloading += DestroyControls;
 
-            if (inputSource == null)
-            {
-                Debug.LogError(
-                    $"[{nameof(VehicleLocalControlsSpawner)}] " +
-                    $"Input source is not assigned.",
-                    this);
+            if (_sceneLifecycle.IsGameplaySceneReady)
+                OnGameplaySceneReady();
+        }
 
+        public override void OnStopClient()
+        {
+            Unsubscribe();
+            DestroyControls();
+            
+            base.OnStopClient();
+        }
+
+        private void OnDestroy()
+        {
+            Unsubscribe();
+            DestroyControls();
+        }
+
+        private void OnGameplaySceneReady()
+        {
+            if (!_isLocalOwner || _spawnedControls != null)
                 return;
-            }
 
-            if (touchControlsPrefab == null)
+            if (inputSource == null || touchControlsPrefab == null)
             {
                 Debug.LogError(
-                    $"[{nameof(VehicleLocalControlsSpawner)}] " +
-                    $"Touch controls prefab is not assigned.",
+                    "[VehicleControls] Input source or touch-controls prefab is missing.",
                     this);
 
                 return;
@@ -48,17 +70,19 @@ namespace CodeBase.Gameplay.Car.Input
 
             _spawnedControls = Instantiate(touchControlsPrefab);
             _spawnedControls.Bind(inputSource);
-        }
 
-        public override void OnStopClient()
-        {
-            DestroyControls();
-            base.OnStopClient();
+            Debug.Log(
+                "[VehicleControls] Local mobile controls were created.",
+                _spawnedControls);
         }
-
-        private void OnDestroy()
+        
+        private void Unsubscribe()
         {
-            DestroyControls();
+            if (_sceneLifecycle == null)
+                return;
+
+            _sceneLifecycle.GameplaySceneReady -= OnGameplaySceneReady;
+            _sceneLifecycle.GameplaySceneUnloading -= DestroyControls;
         }
 
         private void DestroyControls()
@@ -66,11 +90,10 @@ namespace CodeBase.Gameplay.Car.Input
             if (_spawnedControls == null)
                 return;
 
-            _spawnedControls.gameObject.SetActive(false);
+            inputSource?.ResetTouch();
+
             Destroy(_spawnedControls.gameObject);
             _spawnedControls = null;
-            
-            inputSource?.ResetTouch();
         }
     }
 }

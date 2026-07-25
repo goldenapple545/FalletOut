@@ -7,6 +7,9 @@ namespace CodeBase.Infrastructure.Installers.Project
     {
         public override void InstallBindings()
         {
+            Container.BindInterfacesAndSelfTo<GameplaySceneLifecycle>()
+                .AsSingle();
+            
             Container.Bind<ISceneLoader>().To<UnitySceneLoader>().AsSingle();
         }
     }

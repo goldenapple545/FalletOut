@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using CodeBase.Infrastructure.Services.GameStateMachine.States;
+using CodeBase.Infrastructure.Services.SceneLoader;
 
 namespace CodeBase.Infrastructure.Services.GameStateMachine
 {
@@ -9,12 +10,13 @@ namespace CodeBase.Infrastructure.Services.GameStateMachine
         private readonly Dictionary<Type, IState> _states;
         private IState _currentState;
 
-        public GameStateMachine()
+        public GameStateMachine(GameplaySceneLifecycle SceneLifecycle)
         {
             _states = new Dictionary<Type, IState>();
 
             _states[typeof(BootstrapState)] = new BootstrapState(EnterByType);
-            _states[typeof(GameLoopState)] = new GameLoopState();
+            _states[typeof(LoadGameplaySceneState)] = new LoadGameplaySceneState(SceneLifecycle);
+            _states[typeof(GameLoopState)] = new GameLoopState(SceneLifecycle);
         }
 
         public void Enter<TState>() where TState : class, IState

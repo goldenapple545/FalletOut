@@ -99,12 +99,12 @@ MonoBehaviour:
   _scriptableObjectInstallers: []
   _monoInstallers:
   - {fileID: 677104897501665698}
+  - {fileID: 8412894941230288716}
   - {fileID: 3636822520513250800}
   - {fileID: 7035000942437069449}
   - {fileID: 928094754067447444}
   - {fileID: 5625763837076021860}
   - {fileID: 7973061685099634623}
-  - {fileID: 8412894941230288716}
   _installerPrefabs: []
   _parentNewObjectsUnderContext: 1
   _editorReflectionBakingCoverageMode: 0

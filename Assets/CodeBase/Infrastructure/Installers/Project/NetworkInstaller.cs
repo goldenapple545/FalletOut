@@ -1,5 +1,6 @@
 ﻿using CodeBase.Gameplay.Network;
 using CodeBase.Gameplay.Network.Match;
+using CodeBase.Infrastructure.Services.SceneLoader;
 using CodeBase.Infrastructure.Services.Session;
 using UnityEngine;
 using Zenject;
@@ -31,6 +32,10 @@ namespace CodeBase.Infrastructure.Installers.Project
                 .NonLazy();
             
             Container.BindInterfacesAndSelfTo<MatchSceneService>()
+                .AsSingle()
+                .NonLazy();
+            
+            Container.BindInterfacesTo<FishNetSceneFlowAdapter>()
                 .AsSingle()
                 .NonLazy();
         }

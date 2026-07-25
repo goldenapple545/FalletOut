@@ -1,25 +1,23 @@
 ﻿using CodeBase.Infrastructure.Services.SceneLoader;
-using UnityEngine;
 
 namespace CodeBase.Infrastructure.Services.GameStateMachine.States
 {
-    public sealed class GameLoopState : IState
+    public sealed class LoadGameplaySceneState : IState
     {
         private readonly GameplaySceneLifecycle _sceneLifecycle;
 
-        public GameLoopState(GameplaySceneLifecycle sceneLifecycle)
+        public LoadGameplaySceneState(GameplaySceneLifecycle sceneLifecycle)
         {
             _sceneLifecycle = sceneLifecycle;
         }
-        
+
         public void Enter()
         {
-            _sceneLifecycle.NotifyGameplaySceneReady();
+            _sceneLifecycle.NotifyGameplaySceneUnloading();
         }
 
         public void Exit()
         {
-            _sceneLifecycle.NotifyGameplaySceneUnloading();
         }
     }
 }
