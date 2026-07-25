@@ -37,14 +37,6 @@ namespace CodeBase.Gameplay.Car.Editor
         private SerializedProperty rearRightCollider;
         //
         //
-        //PARTICLE SYSTEMS' VARIABLES
-        //
-        //
-        private SerializedProperty useEffects;
-        private SerializedProperty RLWParticleSystem;
-        private SerializedProperty RRWParticleSystem;
-        private SerializedProperty RLWTireSkid;
-        private SerializedProperty RRWTireSkid;
         //
         //
         //
@@ -85,12 +77,6 @@ namespace CodeBase.Gameplay.Car.Editor
             frontRightCollider = SO.FindProperty("frontRightCollider");
             rearLeftCollider = SO.FindProperty("rearLeftCollider");
             rearRightCollider = SO.FindProperty("rearRightCollider");
-
-            useEffects = SO.FindProperty("useEffects");
-            RLWParticleSystem = SO.FindProperty("RLWParticleSystem");
-            RRWParticleSystem = SO.FindProperty("RRWParticleSystem");
-            RLWTireSkid = SO.FindProperty("RLWTireSkid");
-            RRWTireSkid = SO.FindProperty("RRWTireSkid");
 
             useSounds = SO.FindProperty("useSounds");
             carEngineSound = SO.FindProperty("carEngineSound");
@@ -153,19 +139,6 @@ namespace CodeBase.Gameplay.Car.Editor
             //
 
             GUILayout.Space(25);
-            GUILayout.Label("EFFECTS", EditorStyles.boldLabel);
-            GUILayout.Space(10);
-
-            useEffects.boolValue = EditorGUILayout.BeginToggleGroup("Use effects (particle systems)?", useEffects.boolValue);
-            GUILayout.Space(10);
-
-            EditorGUILayout.PropertyField(RLWParticleSystem, new GUIContent("Rear Left Particle System: "));
-            EditorGUILayout.PropertyField(RRWParticleSystem, new GUIContent("Rear Right Particle System: "));
-
-            EditorGUILayout.PropertyField(RLWTireSkid, new GUIContent("Rear Left Trail Renderer: "));
-            EditorGUILayout.PropertyField(RRWTireSkid, new GUIContent("Rear Right Trail Renderer: "));
-
-            EditorGUILayout.EndToggleGroup();
 
             //
             //

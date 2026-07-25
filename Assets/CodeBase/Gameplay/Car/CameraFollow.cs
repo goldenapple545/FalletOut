@@ -2,35 +2,77 @@
 
 namespace CodeBase.Gameplay.Car
 {
-	public class CameraFollow : MonoBehaviour {
+    public sealed class CameraFollow : MonoBehaviour
+    {
+        [Header("Temporary target for scene setup")]
+        [SerializeField] private Transform carTransform;
 
-		public Transform carTransform;
-		[Range(1, 10)]
-		public float followSpeed = 2;
-		[Range(1, 10)]
-		public float lookSpeed = 5;
-		Vector3 initialCameraPosition;
-		Vector3 initialCarPosition;
-		Vector3 absoluteInitCameraPosition;
+        [Header("Follow")]
+        [SerializeField, Range(1f, 10f)]
+        private float followSpeed = 5f;
 
-		void Start(){
-			initialCameraPosition = gameObject.transform.position;
-			initialCarPosition = carTransform.position;
-			absoluteInitCameraPosition = initialCameraPosition - initialCarPosition;
-		}
+        [SerializeField, Range(1f, 10f)]
+        private float lookSpeed = 5f;
 
-		void FixedUpdate()
-		{
-			//Look at car
-			Vector3 _lookDirection = (new Vector3(carTransform.position.x, carTransform.position.y, carTransform.position.z)) - transform.position;
-			Quaternion _rot = Quaternion.LookRotation(_lookDirection, Vector3.up);
-			transform.rotation = Quaternion.Lerp(transform.rotation, _rot, lookSpeed * Time.deltaTime);
+        private Vector3 _offset;
 
-			//Move to car
-			Vector3 _targetPos = absoluteInitCameraPosition + carTransform.transform.position;
-			transform.position = Vector3.Lerp(transform.position, _targetPos, followSpeed * Time.deltaTime);
+        private void Awake()
+        {
+            if (carTransform == null)
+            {
+                Debug.LogError(
+                    "[CameraFollow] Assign CameraAnchor as initial target.",
+                    this);
 
-		}
+                enabled = false;
+                return;
+            }
 
-	}
+            // Камера стоит в сцене относительно CameraAnchor.
+            _offset = transform.position - carTransform.position;
+        }
+
+        public void SetTarget(Transform target)
+        {
+            if (target == null)
+            {
+                Debug.LogError(
+                    "[CameraFollow] Target is null.",
+                    this);
+
+                return;
+            }
+
+            // Offset НЕ пересчитываем.
+            // Именно поэтому anchor можно заменить настоящим игроком.
+            carTransform = target;
+        }
+
+        private void LateUpdate()
+        {
+            if (carTransform == null)
+                return;
+
+            Vector3 targetPosition = carTransform.position + _offset;
+
+            transform.position = Vector3.Lerp(
+                transform.position,
+                targetPosition,
+                followSpeed * Time.deltaTime);
+
+            Vector3 lookDirection = carTransform.position - transform.position;
+
+            if (lookDirection.sqrMagnitude < 0.0001f)
+                return;
+
+            Quaternion targetRotation = Quaternion.LookRotation(
+                lookDirection,
+                Vector3.up);
+
+            transform.rotation = Quaternion.Slerp(
+                transform.rotation,
+                targetRotation,
+                lookSpeed * Time.deltaTime);
+        }
+    }
 }

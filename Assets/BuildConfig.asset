@@ -12,4 +12,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f5662d518a4848e8b05943b509edac0b, type: 3}
   m_Name: BuildConfig
   m_EditorClassIdentifier: Assembly-CSharp::CodeBase.Data.BuildConfig
-  <BuildPlatform>k__BackingField: 1
+  <BuildPlatform>k__BackingField: 0

@@ -388,9 +388,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9db073337ca848e5ac851be1cb6553a4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CodeBase.Gameplay.Car.Presentation.VehicleWheelVisuals
-  _componentIndexCache: 255
+  _componentIndexCache: 6
   _addedNetworkObject: {fileID: 2264628392054573976}
-  _networkObjectCache: {fileID: 0}
+  _networkObjectCache: {fileID: 2264628392054573976}
   networkVisualState: {fileID: 8311038130929660762}
   wheels:
   - <Collider>k__BackingField: {fileID: 8308483947660163386}
@@ -493,6 +493,7 @@ GameObject:
   - component: {fileID: 5919000451875452285}
   - component: {fileID: 1325498023905044454}
   - component: {fileID: 7429108302449601888}
+  - component: {fileID: 8470014632079556451}
   m_Layer: 0
   m_Name: Camera
   m_TagString: Untagged
@@ -508,8 +509,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2590054252433085545}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.20767827, y: -0, z: -0, w: 0.9781972}
-  m_LocalPosition: {x: 0, y: 5.19, z: -6.63}
+  m_LocalRotation: {x: 0.12177619, y: 0.8781058, z: -0.31934857, w: 0.3348392}
+  m_LocalPosition: {x: -16.77309, y: 17.539387, z: 17.124414}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -618,6 +619,21 @@ MonoBehaviour:
     m_VarianceClampScale: 0.9
     m_ContrastAdaptiveSharpening: 0
   m_Version: 2
+--- !u!114 &8470014632079556451
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2590054252433085545}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5f6d3ff905719c845a4a6404bc4d4162, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  carTransform: {fileID: 0}
+  followSpeed: 2
+  lookSpeed: 5.5
 --- !u!1 &3067128150244476868
 GameObject:
   m_ObjectHideFlags: 0
@@ -1169,6 +1185,7 @@ GameObject:
   - component: {fileID: 6980634714996958839}
   - component: {fileID: 8311038130929660762}
   - component: {fileID: 3512228132868254735}
+  - component: {fileID: 1051763553810880842}
   m_Layer: 0
   m_Name: Prometheus
   m_TagString: Untagged
@@ -1220,7 +1237,7 @@ Rigidbody:
   m_ImplicitTensor: 1
   m_UseGravity: 1
   m_IsKinematic: 0
-  m_Interpolate: 0
+  m_Interpolate: 1
   m_Constraints: 0
   m_CollisionDetection: 0
 --- !u!114 &3829708129182012639
@@ -1308,6 +1325,11 @@ MonoBehaviour:
   NetworkBehaviours:
   - {fileID: 1647915377611270883}
   - {fileID: 7337860785728103422}
+  - {fileID: 6980634714996958839}
+  - {fileID: 8311038130929660762}
+  - {fileID: 3512228132868254735}
+  - {fileID: 1051763553810880842}
+  - {fileID: 1815609229716411216}
   InitializedParentNetworkBehaviour: {fileID: 0}
   InitializedNestedNetworkObjects: []
   RuntimeParentNetworkBehaviour: {fileID: 0}
@@ -1318,7 +1340,7 @@ MonoBehaviour:
   _initializeOrder: 0
   _preventDespawnOnDisconnect: 0
   _defaultDespawnType: 0
-  _initializedTimestamp: -8584166501958377436
+  _initializedTimestamp: -8584166279960895610
 --- !u!114 &3112220271104262623
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1419,9 +1441,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c98dbe927d6c4315b01af6117d0f4020, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CodeBase.Gameplay.Car.Input.VehicleLocalControlsSpawner
-  _componentIndexCache: 255
+  _componentIndexCache: 2
   _addedNetworkObject: {fileID: 2264628392054573976}
-  _networkObjectCache: {fileID: 0}
+  _networkObjectCache: {fileID: 2264628392054573976}
   inputSource: {fileID: 3112220271104262623}
   touchControlsPrefab: {fileID: 2420325512756593320, guid: d0fc1ac7d5cec1f4d9df75831c8439d4, type: 3}
 --- !u!114 &8311038130929660762
@@ -1436,9 +1458,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1281016c256344ee9a22729633bcd5fc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CodeBase.Gameplay.Car.Presentation.VehicleNetworkVisualState
-  _componentIndexCache: 255
+  _componentIndexCache: 3
   _addedNetworkObject: {fileID: 2264628392054573976}
-  _networkObjectCache: {fileID: 0}
+  _networkObjectCache: {fileID: 2264628392054573976}
 --- !u!114 &3512228132868254735
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1451,12 +1473,28 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: aadffca253ba41f28ae43f1454d47aa0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CodeBase.Gameplay.Car.Presentation.VehicleVisualStateSynchronizer
-  _componentIndexCache: 255
+  _componentIndexCache: 4
   _addedNetworkObject: {fileID: 2264628392054573976}
-  _networkObjectCache: {fileID: 0}
+  _networkObjectCache: {fileID: 2264628392054573976}
   carController: {fileID: 3829708129182012639}
   driftEffectsStateProvider: {fileID: 2322271365175899180}
   visualState: {fileID: 8311038130929660762}
+--- !u!114 &1051763553810880842
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5751675616803937464}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dbc5a2e07a9849bcb6592a16be10c950, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CodeBase.Gameplay.Car.LocalVehicleCameraBinder
+  _componentIndexCache: 5
+  _addedNetworkObject: {fileID: 2264628392054573976}
+  _networkObjectCache: {fileID: 2264628392054573976}
+  followPoint: {fileID: 0}
 --- !u!1 &6330414233132841805
 GameObject:
   m_ObjectHideFlags: 0
