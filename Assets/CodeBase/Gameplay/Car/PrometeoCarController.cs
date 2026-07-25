@@ -57,16 +57,12 @@ namespace CodeBase.Gameplay.Car
       collider components of the wheels. The wheel collider components and 3D meshes of the wheels cannot come from the same
       game object; they must be separate game objects.
       */
-    public GameObject frontLeftMesh;
     public WheelCollider frontLeftCollider;
     [Space(10)]
-    public GameObject frontRightMesh;
     public WheelCollider frontRightCollider;
     [Space(10)]
-    public GameObject rearLeftMesh;
     public WheelCollider rearLeftCollider;
     [Space(10)]
-    public GameObject rearRightMesh;
     public WheelCollider rearRightCollider;
 
     //PARTICLE SYSTEMS
@@ -258,63 +254,6 @@ namespace CodeBase.Gameplay.Car
       localVelocityX = transform.InverseTransformDirection(carRigidbody.linearVelocity).x;
       // Save the local velocity of the car in the z axis. Used to know if the car is going forward or backwards.
       localVelocityZ = transform.InverseTransformDirection(carRigidbody.linearVelocity).z;
-
-      //CAR PHYSICS
-
-      /*
-      The next part is regarding to the car controller. First, it checks if the user wants to use touch controls (for
-      mobile devices) or analog input controls (WASD + Space).
-
-      The following methods are called whenever a certain key is pressed. For example, in the first 'if' we call the
-      method GoForward() if the user has pressed W.
-
-      In this part of the code we specify what the car needs to do if the user presses W (throttle), S (reverse),
-      A (turn left), D (turn right) or Space bar (handbrake).
-      */
-      // if (useTouchControls && touchControlsSetup){
-      //
-      //   if(throttlePTI.buttonPressed){
-      //     CancelInvoke("DecelerateCar");
-      //     deceleratingCar = false;
-      //     GoForward();
-      //   }
-      //   if(reversePTI.buttonPressed){
-      //     CancelInvoke("DecelerateCar");
-      //     deceleratingCar = false;
-      //     GoReverse();
-      //   }
-      //
-      //   if(turnLeftPTI.buttonPressed){
-      //     TurnLeft();
-      //   }
-      //   if(turnRightPTI.buttonPressed){
-      //     TurnRight();
-      //   }
-      //   if(handbrakePTI.buttonPressed){
-      //     CancelInvoke("DecelerateCar");
-      //     deceleratingCar = false;
-      //     Handbrake();
-      //   }
-      //   if(!handbrakePTI.buttonPressed){
-      //     RecoverTraction();
-      //   }
-      //   if((!throttlePTI.buttonPressed && !reversePTI.buttonPressed)){
-      //     ThrottleOff();
-      //   }
-      //   if((!reversePTI.buttonPressed && !throttlePTI.buttonPressed) && !handbrakePTI.buttonPressed && !deceleratingCar){
-      //     InvokeRepeating("DecelerateCar", 0f, 0.1f);
-      //     deceleratingCar = true;
-      //   }
-      //   if(!turnLeftPTI.buttonPressed && !turnRightPTI.buttonPressed && steeringAxis != 0f){
-      //     ResetSteeringAngle();
-      //   }
-      //
-      // }
-
-
-      // We call the method AnimateWheelMeshes() in order to match the wheel collider movements with the 3D meshes of the wheels.
-      AnimateWheelMeshes();
-
     }
 
     // This method controls the car sounds. For example, the car engine will sound slow when the car speed is low because the
@@ -390,37 +329,6 @@ namespace CodeBase.Gameplay.Car
       var steeringAngle = steeringAxis * maxSteeringAngle;
       frontLeftCollider.steerAngle = Mathf.Lerp(frontLeftCollider.steerAngle, steeringAngle, steeringSpeed);
       frontRightCollider.steerAngle = Mathf.Lerp(frontRightCollider.steerAngle, steeringAngle, steeringSpeed);
-    }
-
-    // This method matches both the position and rotation of the WheelColliders with the WheelMeshes.
-    void AnimateWheelMeshes(){
-      try{
-        Quaternion FLWRotation;
-        Vector3 FLWPosition;
-        frontLeftCollider.GetWorldPose(out FLWPosition, out FLWRotation);
-        frontLeftMesh.transform.position = FLWPosition;
-        frontLeftMesh.transform.rotation = FLWRotation;
-
-        Quaternion FRWRotation;
-        Vector3 FRWPosition;
-        frontRightCollider.GetWorldPose(out FRWPosition, out FRWRotation);
-        frontRightMesh.transform.position = FRWPosition;
-        frontRightMesh.transform.rotation = FRWRotation;
-
-        Quaternion RLWRotation;
-        Vector3 RLWPosition;
-        rearLeftCollider.GetWorldPose(out RLWPosition, out RLWRotation);
-        rearLeftMesh.transform.position = RLWPosition;
-        rearLeftMesh.transform.rotation = RLWRotation;
-
-        Quaternion RRWRotation;
-        Vector3 RRWPosition;
-        rearRightCollider.GetWorldPose(out RRWPosition, out RRWRotation);
-        rearRightMesh.transform.position = RRWPosition;
-        rearRightMesh.transform.rotation = RRWRotation;
-      }catch(Exception ex){
-        Debug.LogWarning(ex);
-      }
     }
 
     //

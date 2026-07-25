@@ -31,13 +31,9 @@ namespace CodeBase.Gameplay.Car.Editor
         //WHEELS VARIABLES
         //
         //
-        private SerializedProperty frontLeftMesh;
         private SerializedProperty frontLeftCollider;
-        private SerializedProperty frontRightMesh;
         private SerializedProperty frontRightCollider;
-        private SerializedProperty rearLeftMesh;
         private SerializedProperty rearLeftCollider;
-        private SerializedProperty rearRightMesh;
         private SerializedProperty rearRightCollider;
         //
         //
@@ -51,11 +47,6 @@ namespace CodeBase.Gameplay.Car.Editor
         private SerializedProperty RRWTireSkid;
         //
         //
-        //SPEED TEXT (UI) VARIABLES
-        //
-        //
-        private SerializedProperty useUI;
-        private SerializedProperty carSpeedText;
         //
         //
         //SPEED TEXT (UI) VARIABLES
@@ -90,13 +81,9 @@ namespace CodeBase.Gameplay.Car.Editor
             handbrakeDriftMultiplier = SO.FindProperty("handbrakeDriftMultiplier");
             bodyMassCenter = SO.FindProperty("bodyMassCenter");
 
-            frontLeftMesh = SO.FindProperty("frontLeftMesh");
             frontLeftCollider = SO.FindProperty("frontLeftCollider");
-            frontRightMesh = SO.FindProperty("frontRightMesh");
             frontRightCollider = SO.FindProperty("frontRightCollider");
-            rearLeftMesh = SO.FindProperty("rearLeftMesh");
             rearLeftCollider = SO.FindProperty("rearLeftCollider");
-            rearRightMesh = SO.FindProperty("rearRightMesh");
             rearRightCollider = SO.FindProperty("rearRightCollider");
 
             useEffects = SO.FindProperty("useEffects");
@@ -104,9 +91,6 @@ namespace CodeBase.Gameplay.Car.Editor
             RRWParticleSystem = SO.FindProperty("RRWParticleSystem");
             RLWTireSkid = SO.FindProperty("RLWTireSkid");
             RRWTireSkid = SO.FindProperty("RRWTireSkid");
-
-            useUI = SO.FindProperty("useUI");
-            carSpeedText = SO.FindProperty("carSpeedText");
 
             useSounds = SO.FindProperty("useSounds");
             carEngineSound = SO.FindProperty("carEngineSound");
@@ -154,16 +138,12 @@ namespace CodeBase.Gameplay.Car.Editor
             GUILayout.Label("WHEELS", EditorStyles.boldLabel);
             GUILayout.Space(10);
 
-            EditorGUILayout.PropertyField(frontLeftMesh, new GUIContent("Front Left Mesh: "));
             EditorGUILayout.PropertyField(frontLeftCollider, new GUIContent("Front Left Collider: "));
 
-            EditorGUILayout.PropertyField(frontRightMesh, new GUIContent("Front Right Mesh: "));
             EditorGUILayout.PropertyField(frontRightCollider, new GUIContent("Front Right Collider: "));
 
-            EditorGUILayout.PropertyField(rearLeftMesh, new GUIContent("Rear Left Mesh: "));
             EditorGUILayout.PropertyField(rearLeftCollider, new GUIContent("Rear Left Collider: "));
 
-            EditorGUILayout.PropertyField(rearRightMesh, new GUIContent("Rear Right Mesh: "));
             EditorGUILayout.PropertyField(rearRightCollider, new GUIContent("Rear Right Collider: "));
 
             //
@@ -194,15 +174,6 @@ namespace CodeBase.Gameplay.Car.Editor
             //
 
             GUILayout.Space(25);
-            GUILayout.Label("UI", EditorStyles.boldLabel);
-            GUILayout.Space(10);
-
-            useUI.boolValue = EditorGUILayout.BeginToggleGroup("Use UI (Speed text)?", useUI.boolValue);
-            GUILayout.Space(10);
-
-            EditorGUILayout.PropertyField(carSpeedText, new GUIContent("Speed Text (UI): "));
-
-            EditorGUILayout.EndToggleGroup();
 
             //
             //
