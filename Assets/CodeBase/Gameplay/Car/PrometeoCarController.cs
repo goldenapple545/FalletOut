@@ -65,25 +65,6 @@ namespace CodeBase.Gameplay.Car
     [Space(10)]
     public WheelCollider rearRightCollider;
 
-    //PARTICLE SYSTEMS
-
-    [Space(20)]
-    //[Header("EFFECTS")]
-    [Space(10)]
-    //The following variable lets you to set up particle systems in your car
-    public bool useEffects = false;
-
-    // The following particle systems are used as tire smoke when the car drifts.
-    public ParticleSystem RLWParticleSystem;
-    public ParticleSystem RRWParticleSystem;
-
-    [Space(10)]
-    // The following trail renderers are used as tire skids when the car loses traction.
-    public TrailRenderer RLWTireSkid;
-    public TrailRenderer RRWTireSkid;
-
-    //SPEED TEXT (UI)
-
     //SOUNDS
 
     [Space(20)]
@@ -116,11 +97,13 @@ namespace CodeBase.Gameplay.Car
     //CAR DATA
 
     [HideInInspector]
-    public float carSpeed; // Used to store the speed of the car.
+    public float carSpeed;
     [HideInInspector]
-    public bool isDrifting; // Used to know whether the car is drifting or not.
+    public bool isDrifting;
     [HideInInspector]
-    public bool isTractionLocked; // Used to know whether the traction of the car is locked or not.
+    public bool isTractionLocked;
+    
+    public float LocalVelocityX => localVelocityX;
 
     //PRIVATE VARIABLES
 
@@ -203,21 +186,6 @@ namespace CodeBase.Gameplay.Car
         }
         if(tireScreechSound != null){
           tireScreechSound.Stop();
-        }
-      }
-
-      if(!useEffects){
-        if(RLWParticleSystem != null){
-          RLWParticleSystem.Stop();
-        }
-        if(RRWParticleSystem != null){
-          RRWParticleSystem.Stop();
-        }
-        if(RLWTireSkid != null){
-          RLWTireSkid.emitting = false;
-        }
-        if(RRWTireSkid != null){
-          RRWTireSkid.emitting = false;
         }
       }
 
@@ -341,10 +309,8 @@ namespace CodeBase.Gameplay.Car
       //3f, it means that the car is losing traction, then the car will start emitting particle systems.
       if(Mathf.Abs(localVelocityX) > 2.5f){
         isDrifting = true;
-        DriftCarPS();
       }else{
         isDrifting = false;
-        DriftCarPS();
       }
       // The following part sets the throttle power to 1 smoothly.
       throttleAxis = throttleAxis + (Time.deltaTime * 3f);
@@ -385,10 +351,8 @@ namespace CodeBase.Gameplay.Car
       //3f, it means that the car is losing traction, then the car will start emitting particle systems.
       if(Mathf.Abs(localVelocityX) > 2.5f){
         isDrifting = true;
-        DriftCarPS();
       }else{
         isDrifting = false;
-        DriftCarPS();
       }
       // The following part sets the throttle power to -1 smoothly.
       throttleAxis = throttleAxis - (Time.deltaTime * 3f);
@@ -437,10 +401,8 @@ namespace CodeBase.Gameplay.Car
     public void DecelerateCar(){
       if(Mathf.Abs(localVelocityX) > 2.5f){
         isDrifting = true;
-        DriftCarPS();
       }else{
         isDrifting = false;
-        DriftCarPS();
       }
       // The following part resets the throttle power to 0 smoothly.
       if(throttleAxis != 0f){
@@ -519,53 +481,6 @@ namespace CodeBase.Gameplay.Car
       // Whenever the player uses the handbrake, it means that the wheels are locked, so we set 'isTractionLocked = true'
       // and, as a consequense, the car starts to emit trails to simulate the wheel skids.
       isTractionLocked = true;
-      DriftCarPS();
-
-    }
-
-    // This function is used to emit both the particle systems of the tires' smoke and the trail renderers of the tire skids
-    // depending on the value of the bool variables 'isDrifting' and 'isTractionLocked'.
-    public void DriftCarPS(){
-
-      if(useEffects){
-        try{
-          if(isDrifting){
-            RLWParticleSystem.Play();
-            RRWParticleSystem.Play();
-          }else if(!isDrifting){
-            RLWParticleSystem.Stop();
-            RRWParticleSystem.Stop();
-          }
-        }catch(Exception ex){
-          Debug.LogWarning(ex);
-        }
-
-        try{
-          if((isTractionLocked || Mathf.Abs(localVelocityX) > 5f) && Mathf.Abs(carSpeed) > 12f){
-            RLWTireSkid.emitting = true;
-            RRWTireSkid.emitting = true;
-          }else {
-            RLWTireSkid.emitting = false;
-            RRWTireSkid.emitting = false;
-          }
-        }catch(Exception ex){
-          Debug.LogWarning(ex);
-        }
-      }else if(!useEffects){
-        if(RLWParticleSystem != null){
-          RLWParticleSystem.Stop();
-        }
-        if(RRWParticleSystem != null){
-          RRWParticleSystem.Stop();
-        }
-        if(RLWTireSkid != null){
-          RLWTireSkid.emitting = false;
-        }
-        if(RRWTireSkid != null){
-          RRWTireSkid.emitting = false;
-        }
-      }
-
     }
 
     // This function is used to recover the traction of the car when the user has stopped using the car's handbrake.

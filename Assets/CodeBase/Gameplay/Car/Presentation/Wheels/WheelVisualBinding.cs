@@ -1,7 +1,7 @@
 ﻿using System;
 using UnityEngine;
 
-namespace CodeBase.Gameplay.Car.Presentation
+namespace CodeBase.Gameplay.Car.Presentation.Wheels
 {
     [Serializable]
     public sealed class WheelVisualBinding

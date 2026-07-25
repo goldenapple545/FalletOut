@@ -7,9 +7,6 @@ namespace CodeBase.Gameplay.Car
 {
     public sealed class NetworkVehicleController : NetworkBehaviour
     {
-        [SerializeField] private PrometeoCarController carController;
-        [SerializeField] private VehicleNetworkVisualState visualState;
-        
         [SerializeField] private VehicleInputSource inputSource;
         [SerializeField] private VehiclePhysicsMotor physicsMotor;
 
@@ -36,9 +33,6 @@ namespace CodeBase.Gameplay.Car
                 return;
 
             SimulateVehicle(_latestInput);
-
-            visualState.SetFrontSteeringAngle(
-                carController.frontLeftCollider.steerAngle);
         }
 
         private void SimulateVehicle(VehicleInput LatestInput)

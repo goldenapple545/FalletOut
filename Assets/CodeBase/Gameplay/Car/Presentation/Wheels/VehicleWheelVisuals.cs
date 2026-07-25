@@ -1,7 +1,7 @@
 ﻿using FishNet.Object;
 using UnityEngine;
 
-namespace CodeBase.Gameplay.Car.Presentation
+namespace CodeBase.Gameplay.Car.Presentation.Wheels
 {
     public sealed class VehicleWheelVisuals : NetworkBehaviour
     {

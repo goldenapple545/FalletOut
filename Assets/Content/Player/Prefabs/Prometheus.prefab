@@ -809,6 +809,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3242850730153500137}
+  - component: {fileID: 2322271365175899180}
+  - component: {fileID: 7055180601528751617}
   m_Layer: 0
   m_Name: Effects
   m_TagString: Untagged
@@ -835,6 +837,36 @@ Transform:
   - {fileID: 7245168015404128443}
   m_Father: {fileID: 2922547356944998858}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2322271365175899180
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3445172785378427151}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e5f821ca7744e58871df115881688e3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CodeBase.Gameplay.Car.Presentation.VehicleDriftDetector
+  carController: {fileID: 3829708129182012639}
+--- !u!114 &7055180601528751617
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3445172785378427151}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 48aaf613fccb42b791402624498abacb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CodeBase.Gameplay.Car.Presentation.VehicleDriftEffectsPresenter
+  visualState: {fileID: 8311038130929660762}
+  rearLeftSmoke: {fileID: 8637436926496760837}
+  rearRightSmoke: {fileID: 4179496067256084046}
+  rearLeftSkid: {fileID: 2729496136176617900}
+  rearRightSkid: {fileID: 7245168015404128442}
 --- !u!1 &3890127315473221743
 GameObject:
   m_ObjectHideFlags: 0
@@ -1136,6 +1168,7 @@ GameObject:
   - component: {fileID: 7337860785728103422}
   - component: {fileID: 6980634714996958839}
   - component: {fileID: 8311038130929660762}
+  - component: {fileID: 3512228132868254735}
   m_Layer: 0
   m_Name: Prometheus
   m_TagString: Untagged
@@ -1215,11 +1248,6 @@ MonoBehaviour:
   frontRightCollider: {fileID: 5457258448343429478}
   rearLeftCollider: {fileID: 7783703220749698988}
   rearRightCollider: {fileID: 5165234882742754037}
-  useEffects: 1
-  RLWParticleSystem: {fileID: 8637436926496760837}
-  RRWParticleSystem: {fileID: 4179496067256084046}
-  RLWTireSkid: {fileID: 2729496136176617900}
-  RRWTireSkid: {fileID: 7245168015404128442}
   useSounds: 1
   carEngineSound: {fileID: 6550003880944123409}
   tireScreechSound: {fileID: 9117988495452348914}
@@ -1331,8 +1359,6 @@ MonoBehaviour:
   _componentIndexCache: 0
   _addedNetworkObject: {fileID: 2264628392054573976}
   _networkObjectCache: {fileID: 2264628392054573976}
-  carController: {fileID: 3829708129182012639}
-  visualState: {fileID: 8311038130929660762}
   inputSource: {fileID: 3112220271104262623}
   physicsMotor: {fileID: 412961462541341605}
 --- !u!114 &7337860785728103422
@@ -1413,6 +1439,24 @@ MonoBehaviour:
   _componentIndexCache: 255
   _addedNetworkObject: {fileID: 2264628392054573976}
   _networkObjectCache: {fileID: 0}
+--- !u!114 &3512228132868254735
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5751675616803937464}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aadffca253ba41f28ae43f1454d47aa0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CodeBase.Gameplay.Car.Presentation.VehicleVisualStateSynchronizer
+  _componentIndexCache: 255
+  _addedNetworkObject: {fileID: 2264628392054573976}
+  _networkObjectCache: {fileID: 0}
+  carController: {fileID: 3829708129182012639}
+  driftEffectsStateProvider: {fileID: 2322271365175899180}
+  visualState: {fileID: 8311038130929660762}
 --- !u!1 &6330414233132841805
 GameObject:
   m_ObjectHideFlags: 0
