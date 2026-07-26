@@ -1,4 +1,7 @@
 ﻿using CodeBase.Gameplay.Car.Input;
+using CodeBase.Gameplay.Car.Input.Prediction;
+using FishNet.Component.Prediction;
+using FishNet.Object.Prediction;
 using UnityEngine;
 
 namespace CodeBase.Gameplay.Car
@@ -6,30 +9,31 @@ namespace CodeBase.Gameplay.Car
     public sealed class VehiclePhysicsMotor : MonoBehaviour
     {
         [SerializeField] private PrometeoCarController prometeo;
+        
+        public PrometeoCarController Prometeo => prometeo;
 
-        public void Simulate(VehicleInput input, float deltaTime)
+        public void Simulate(
+            VehicleInput input,
+            PredictionRigidbody predictionRigidbody,
+            float tickDelta,
+            ReplicateState state)
         {
             if (prometeo == null)
                 return;
 
-            if (input.Throttle > 0f)
-                prometeo.GoForward();
-            else if (input.Throttle < 0f)
-                prometeo.GoReverse();
-            else
-                prometeo.ThrottleOff();
+            prometeo.SimulateTick(
+                input,
+                predictionRigidbody,
+                tickDelta,
+                state);
+        }
 
-            if (input.Steering < 0f)
-                prometeo.TurnLeft();
-            else if (input.Steering > 0f)
-                prometeo.TurnRight();
-            else
-                prometeo.ResetSteeringAngle();
+        public void ApplyReconcile(VehicleReconcileData data)
+        {
+            if (prometeo == null)
+                return;
 
-            if (input.Handbrake)
-                prometeo.Handbrake();
-            else
-                prometeo.RecoverTraction();
+            prometeo.ApplyPredictionState(data);
         }
     }
 }

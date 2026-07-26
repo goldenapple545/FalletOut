@@ -1,6 +1,9 @@
 ﻿using CodeBase.Gameplay.Car.Input;
-using CodeBase.Gameplay.Car.Presentation;
+using CodeBase.Gameplay.Car.Input.Prediction;
+using FishNet.Component.Prediction;
 using FishNet.Object;
+using FishNet.Object.Prediction;
+using FishNet.Transporting;
 using UnityEngine;
 
 namespace CodeBase.Gameplay.Car
@@ -9,35 +12,108 @@ namespace CodeBase.Gameplay.Car
     {
         [SerializeField] private VehicleInputSource inputSource;
         [SerializeField] private VehiclePhysicsMotor physicsMotor;
+        [SerializeField] private Rigidbody vehicleRigidbody;
 
-        private VehicleInput _latestInput;
+        private PredictionRigidbody _predictionRigidbody;
 
-        private void Update()
+        private void Awake()
         {
-            if (!IsOwner)
+            if (vehicleRigidbody == null)
+                vehicleRigidbody = GetComponent<Rigidbody>();
+
+            if (vehicleRigidbody == null)
+            {
+                Debug.LogError(
+                    "[NetworkVehicleController] Rigidbody is missing.",
+                    this);
+
+                enabled = false;
                 return;
+            }
 
-            _latestInput = inputSource.Read();
-            SendInputToServer(_latestInput);
+            _predictionRigidbody = new PredictionRigidbody();
+            _predictionRigidbody.Initialize(vehicleRigidbody);
         }
 
-        [ServerRpc]
-        private void SendInputToServer(VehicleInput input)
+        public override void OnStartNetwork()
         {
-            _latestInput = input;
+            base.OnStartNetwork();
+
+            TimeManager.OnTick += OnTick;
+            TimeManager.OnPostTick += OnPostTick;
         }
 
-        private void FixedUpdate()
+        public override void OnStopNetwork()
+        {
+            TimeManager.OnTick -= OnTick;
+            TimeManager.OnPostTick -= OnPostTick;
+
+            base.OnStopNetwork();
+        }
+
+        private void OnTick()
+        {
+            VehicleReplicateData data = default;
+
+            if (IsOwner)
+            {
+                VehicleInput input = inputSource.Read();
+
+                data = new VehicleReplicateData(
+                    input.Throttle,
+                    input.Steering,
+                    input.Handbrake);
+            }
+
+            RunInputs(data);
+        }
+
+        private void OnPostTick()
+        {
+            CreateReconcile();
+        }
+
+        public override void CreateReconcile()
         {
             if (!IsServerStarted)
                 return;
 
-            SimulateVehicle(_latestInput);
+            PrometeoCarController prometeo = physicsMotor.Prometeo;
+
+            VehicleReconcileData data = new(
+                _predictionRigidbody,
+                prometeo.SteeringAxis,
+                prometeo.ThrottleAxis,
+                prometeo.DriftingAxis,
+                prometeo.IsDrifting,
+                prometeo.IsTractionLocked);
+
+            ReconcileState(data);
         }
 
-        private void SimulateVehicle(VehicleInput LatestInput)
+        [Replicate]
+        private void RunInputs(
+            VehicleReplicateData data,
+            ReplicateState state = ReplicateState.Invalid,
+            Channel channel = Channel.Unreliable)
         {
-            physicsMotor.Simulate(LatestInput, Time.fixedDeltaTime);
+            physicsMotor.Simulate(
+                new VehicleInput(
+                    data.Throttle,
+                    data.Steering,
+                    data.Handbrake),
+                _predictionRigidbody,
+                (float)TimeManager.TickDelta,
+                state);
+        }
+
+        [Reconcile]
+        private void ReconcileState(
+            VehicleReconcileData data,
+            Channel channel = Channel.Unreliable)
+        {
+            _predictionRigidbody.Reconcile(data.Rigidbody);
+            physicsMotor.ApplyReconcile(data);
         }
     }
 }

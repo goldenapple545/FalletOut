@@ -47,17 +47,6 @@ namespace CodeBase.Gameplay.Car.Editor
         private SerializedProperty useSounds;
         private SerializedProperty carEngineSound;
         private SerializedProperty tireScreechSound;
-        //
-        //
-        //TOUCH CONTROLS VARIABLES
-        //
-        //
-        private SerializedProperty useTouchControls;
-        private SerializedProperty throttleButton;
-        private SerializedProperty reverseButton;
-        private SerializedProperty turnRightButton;
-        private SerializedProperty turnLeftButton;
-        private SerializedProperty handbrakeButton;
 
         private void OnEnable(){
             prometeo = (PrometeoCarController)target;
@@ -81,14 +70,6 @@ namespace CodeBase.Gameplay.Car.Editor
             useSounds = SO.FindProperty("useSounds");
             carEngineSound = SO.FindProperty("carEngineSound");
             tireScreechSound = SO.FindProperty("tireScreechSound");
-
-            useTouchControls = SO.FindProperty("useTouchControls");
-            throttleButton = SO.FindProperty("throttleButton");
-            reverseButton = SO.FindProperty("reverseButton");
-            turnRightButton = SO.FindProperty("turnRightButton");
-            turnLeftButton = SO.FindProperty("turnLeftButton");
-            handbrakeButton = SO.FindProperty("handbrakeButton");
-
         }
 
         public override void OnInspectorGUI(){
@@ -163,27 +144,6 @@ namespace CodeBase.Gameplay.Car.Editor
 
             EditorGUILayout.PropertyField(carEngineSound, new GUIContent("Car Engine Sound: "));
             EditorGUILayout.PropertyField(tireScreechSound, new GUIContent("Tire Screech Sound: "));
-
-            EditorGUILayout.EndToggleGroup();
-
-            //
-            //
-            //TOUCH CONTROLS
-            //
-            //
-
-            GUILayout.Space(25);
-            GUILayout.Label("TOUCH CONTROLS", EditorStyles.boldLabel);
-            GUILayout.Space(10);
-
-            useTouchControls.boolValue = EditorGUILayout.BeginToggleGroup("Use touch controls (mobile devices)?", useTouchControls.boolValue);
-            GUILayout.Space(10);
-
-            EditorGUILayout.PropertyField(throttleButton, new GUIContent("Throttle Button: "));
-            EditorGUILayout.PropertyField(reverseButton, new GUIContent("Brakes/Reverse Button: "));
-            EditorGUILayout.PropertyField(turnLeftButton, new GUIContent("Turn Left Button: "));
-            EditorGUILayout.PropertyField(turnRightButton, new GUIContent("Turn Right Button: "));
-            EditorGUILayout.PropertyField(handbrakeButton, new GUIContent("Handbrake Button: "));
 
             EditorGUILayout.EndToggleGroup();
 
