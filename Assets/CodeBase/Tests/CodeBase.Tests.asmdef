@@ -3,7 +3,8 @@
     "rootNamespace": "CodeBase.Tests",
     "references": [
         "CodeBase",
-        "FishNet.Runtime"
+        "FishNet.Runtime",
+        "UnityEngine.TestRunner"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

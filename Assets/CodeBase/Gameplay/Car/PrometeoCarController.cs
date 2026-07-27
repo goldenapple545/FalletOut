@@ -125,7 +125,12 @@ namespace CodeBase.Gameplay.Car
     float RRWextremumSlip;
 
     // Start is called before the first frame update
-    void Awake()
+    void Start()
+    {
+        Initialize();
+    }
+
+    public void InitializeManual()
     {
         Initialize();
     }
