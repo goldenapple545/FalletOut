@@ -130,12 +130,12 @@ namespace CodeBase.Tests.Gameplay.Car.Input
         private void SetBuildPlatform(Platform platform)
         {
             // BuildConfig.BuildPlatform has private setter,
-            // use reflection to force it for tests
-            var platformProperty = typeof(BuildConfig).GetProperty(
-                "BuildPlatform",
+            // use the compiler-generated backing field: <BuildPlatform>k__BackingField
+            var backingField = typeof(BuildConfig).GetField(
+                "<BuildPlatform>k__BackingField",
                 System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
-            if (platformProperty != null && platformProperty.CanWrite)
-                platformProperty.SetValue(_buildConfig, platform, null);
+            if (backingField != null)
+                backingField.SetValue(_buildConfig, platform);
         }
     }
 }

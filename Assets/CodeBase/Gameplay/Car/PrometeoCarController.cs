@@ -90,6 +90,7 @@ namespace CodeBase.Gameplay.Car
     public bool isTractionLocked;
     
     public float LocalVelocityX => localVelocityX;
+    public float LocalVelocityZ => localVelocityZ;
     
     public float SteeringAxis => steeringAxis;
     public float ThrottleAxis => throttleAxis;
