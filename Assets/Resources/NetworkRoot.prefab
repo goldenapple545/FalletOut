@@ -145,6 +145,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 7443408887813606051, guid: 0b650fca685f2eb41a86538aa883e4c1, type: 3}
       insertIndex: -1
       addedObject: {fileID: 7447246148253794581}
+    - targetCorrespondingSourceObject: {fileID: 7443408887813606051, guid: 0b650fca685f2eb41a86538aa883e4c1, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 5690836224550860785}
   m_SourcePrefab: {fileID: 100100000, guid: 0b650fca685f2eb41a86538aa883e4c1, type: 3}
 --- !u!1 &6332011728052953632 stripped
 GameObject:
@@ -196,8 +199,8 @@ MonoBehaviour:
   _updateOrder: 0
   _timingType: 0
   _allowTickDropping: 1
-  _maximumFrameTicks: 3
-  _tickRate: 60
+  _maximumFrameTicks: 8
+  _tickRate: 120
   _pingInterval: 1
   _physicsMode: 1
 --- !u!114 &5501945023200335970
@@ -215,7 +218,7 @@ MonoBehaviour:
   _reduceReconcilesWithFramerate: 1
   _minimumClientReconcileFramerate: 50
   _createLocalStates: 1
-  _stateInterpolation: 2
+  _stateInterpolation: 3
   _stateOrder: 1
   _dropExcessiveReplicates: 1
   _maximumServerReplicates: 15
@@ -255,6 +258,21 @@ MonoBehaviour:
   _placement: 1
   _showOutgoing: 1
   _showIncoming: 1
+--- !u!114 &5690836224550860785
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6332011728052953632}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f9b6b565cd9533c4ebc18003f0fc18a2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: FishNet.Runtime::FishNet.Component.Utility.PingDisplay
+  _color: {r: 1, g: 1, b: 1, a: 1}
+  _placement: 3
+  _hideTickRate: 0
 --- !u!114 &6332011728052953633 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 7443408887813606050, guid: 0b650fca685f2eb41a86538aa883e4c1, type: 3}
