@@ -82,6 +82,7 @@ Transform:
   - {fileID: 4456440736084583295}
   - {fileID: 385405972157283187}
   - {fileID: 49980942830487453}
+  - {fileID: 381257655103642132}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &6277083242370610868
@@ -105,6 +106,7 @@ MonoBehaviour:
   - {fileID: 928094754067447444}
   - {fileID: 5625763837076021860}
   - {fileID: 7973061685099634623}
+  - {fileID: 2113736211781169525}
   _installerPrefabs: []
   _parentNewObjectsUnderContext: 1
   _editorReflectionBakingCoverageMode: 0
@@ -251,6 +253,52 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3f7de76b6bf849c2b5c21118004fcc16, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CodeBase.Infrastructure.Installers.Project.AppInstaller
+--- !u!1 &4306993056379000657
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 381257655103642132}
+  - component: {fileID: 2113736211781169525}
+  m_Layer: 0
+  m_Name: MusicInstaller
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &381257655103642132
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4306993056379000657}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 4095736090647286088}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2113736211781169525
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4306993056379000657}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 13ed9a444057d7443a8a9ca59a1062f3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: CodeBase::CodeBase.Infrastructure.Installers.Project.MusicInstaller
+  musicConfig: {fileID: 11400000, guid: f5b46ae153983dc4599bc1cdd8cc3dbd, type: 2}
+  musicSourcePrefab: {fileID: 4746358529540409705, guid: 74a6bb11b1c12244a8fba9a7c750eb79, type: 3}
 --- !u!1 &6405376764110970003
 GameObject:
   m_ObjectHideFlags: 0

@@ -55,7 +55,15 @@ namespace CodeBase.CodeBase.Gameplay.Car.Presentation
             SetEffectsActive(isAlive);
             
             if (!isAlive)
-                source.PlayOneShot(clip);
+            {
+                source.clip = clip;
+                source.loop = false;
+                source.Play();
+            }
+            else
+            {
+                source.Stop();
+            }
         }
 
         private void SetEffectsActive(bool isAlive)
@@ -72,10 +80,7 @@ namespace CodeBase.CodeBase.Gameplay.Car.Presentation
             
             foreach (var fire in fireEffects)
             {
-                if (!isAlive)
-                    fire.Play();
-                else
-                    fire.Stop();
+                fire.gameObject.SetActive(!isAlive);
             }
         }
 
