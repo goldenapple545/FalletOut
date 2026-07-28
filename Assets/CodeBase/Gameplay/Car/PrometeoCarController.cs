@@ -124,6 +124,8 @@ namespace CodeBase.Gameplay.Car
     float RLWextremumSlip;
     WheelFrictionCurve RRwheelFriction;
     float RRWextremumSlip;
+    
+    private bool _canReactOnInput;
 
     // Start is called before the first frame update
     void Start()
@@ -134,6 +136,20 @@ namespace CodeBase.Gameplay.Car
     public void InitializeManual()
     {
         Initialize();
+    }
+
+    public void SetReactOnInput(bool value)
+    {
+        if (!value)
+        {
+            _canReactOnInput = true;
+            
+            UpdateSteering(0, 0);
+            UpdateDrive(0, 0);
+            UpdateHandbrake(false, 0);
+        }
+        
+        _canReactOnInput = value;
     }
 
     private void Initialize()
@@ -259,6 +275,8 @@ namespace CodeBase.Gameplay.Car
 
     private void UpdateSteering(float steeringInput, float tickDelta)
     {
+        if (!_canReactOnInput) return;
+        
         steeringAxis = Mathf.MoveTowards(
             steeringAxis,
             Mathf.Clamp(steeringInput, -1f, 1f),
@@ -284,6 +302,8 @@ namespace CodeBase.Gameplay.Car
 
     private void UpdateDrive(float throttleInput, float tickDelta)
     {
+        if (!_canReactOnInput) return;
+        
         float desiredThrottle = Mathf.Clamp(throttleInput, -1f, 1f);
 
         float throttleChangeSpeed =
@@ -353,6 +373,8 @@ namespace CodeBase.Gameplay.Car
 
     private void UpdateHandbrake(bool isHandbrakePressed, float tickDelta)
     {
+        if (!_canReactOnInput) return;
+        
         isTractionLocked = isHandbrakePressed;
 
         float targetDrift = isHandbrakePressed ? 1f : 0f;

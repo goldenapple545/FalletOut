@@ -3,8 +3,7 @@
     public enum MatchPhase : byte
     {
         WaitingForPlayers = 0,
-        Countdown = 1,
-        Playing = 2,
-        Finished = 3
+        RoundInProgress = 1,
+        RoundEnded = 2
     }
 }
