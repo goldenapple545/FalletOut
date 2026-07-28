@@ -1282,6 +1282,7 @@ GameObject:
   - component: {fileID: 632029230}
   - component: {fileID: 632029229}
   - component: {fileID: 632029233}
+  - component: {fileID: 632029234}
   m_Layer: 0
   m_Name: CameraFollow
   m_TagString: Untagged
@@ -1422,6 +1423,18 @@ MonoBehaviour:
   carTransform: {fileID: 132261231}
   followSpeed: 1.42
   lookSpeed: 5.5
+--- !u!114 &632029234
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 632029228}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2d5d8eddb90b43e8a88835040d4abc19, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: CodeBase::CodeBase.CodeBase.Utils.MainCamera
 --- !u!1 &640314043
 GameObject:
   m_ObjectHideFlags: 0
@@ -2659,6 +2672,7 @@ GameObject:
   - component: {fileID: 1799145890}
   - component: {fileID: 1799145891}
   - component: {fileID: 1799145892}
+  - component: {fileID: 1799145893}
   m_Layer: 0
   m_Name: SceneContext
   m_TagString: Untagged
@@ -2696,6 +2710,7 @@ MonoBehaviour:
   _scriptableObjectInstallers: []
   _monoInstallers:
   - {fileID: 1799145892}
+  - {fileID: 1799145893}
   _installerPrefabs: []
   _autoRun: 1
   OnPreInstall:
@@ -2726,6 +2741,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CodeBase.Infrastructure.Installers.Scene.FishNetZenjectBridgeInstaller
   bridge: {fileID: 1947748012}
+--- !u!114 &1799145893
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1799145889}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 039ca6b9843a43e1ae772aef8b594067, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: CodeBase::CodeBase.CodeBase.Infrastructure.Installers.Scene.MatchSceneInstaller
+  damageHistoryCapacity: 256
 --- !u!1 &1947748010
 GameObject:
   m_ObjectHideFlags: 0
