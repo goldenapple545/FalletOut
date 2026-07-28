@@ -23,6 +23,9 @@
     - [Матч-система](#матч-система)
     - [Клиентское предсказание](#клиентское-предсказание-client-prediction)
     - [Сеть автомобилей](#сеть-автомобилей)
+- [Тесты](#тесты)
+- [Известные решения](#известные-решения)
+  - [FishNet + Zenject DI для спавн-объектов](#fishnet--zenject-di-для-спавн-объектов)
 
 ## Обзор
 
@@ -396,4 +399,221 @@ Client: receives reconcile → snap rigidbody → re-simulate from last confirme
 - **NetworkVehicleController** — обёртка над физикой с сетевой синхронизацией
 - **VehiclePhysicsMotor** — ядро физики автомобиля (ускорение, торможение, поворот)
 - **PrometeoCarController** — контроллер управления автомобилем
-- Повреждения синхронизированы через FishNet SyncVar и систему `VehicleDamageSystem`**
+- Повреждения синхронизированы через FishNet SyncVar и систему `VehicleDamageSystem`
+
+---
+
+## Тесты
+
+Тесты находятся в `Assets/CodeBase/Tests/` и используют **NUnit** + **Unity Test Framework**. Assembly definition: `CodeBase.Tests.asmdef`.
+
+### Структура
+
+```
+Assets/CodeBase/Tests/
+├── Gameplay/
+│   └── Car/
+│       ├── CarPhysicsTests.cs                          # Интеграционные тесты PrometeoCarController
+│       ├── VehiclePhysicsMotorTests.cs                 # Тесты VehiclePhysicsMotor.Simulate()
+│       └── Input/
+│           ├── VehicleInputSourceTests.cs              # Тесты ввода (PC / Android touch)
+│           └── Prediction/
+│               ├── VehicleReplicateDataTests.cs        # Тесты replicate data integrity
+│               ├── VehicleReconcileDataTests.cs        # Тесты reconcile data integrity
+│               └── VehiclePredictionDataIntegrityTests.cs
+```
+
+### Типы тестов
+
+**UnityTest (coroutine)** — тесты, требующие физического движка и `WaitForFixedUpdate`:
+
+```csharp
+[UnityTest]
+public IEnumerator FullThrottle_AcceleratesForward()
+{
+    float tickDelta = 0.02f;
+    VehicleInput throttleInput = new VehicleInput(1f, 0f, false);
+
+    for (int i = 0; i < 50; i++)
+    {
+        _prometeo.SimulateTick(
+            throttleInput, null, tickDelta,
+            FishNet.Object.Prediction.ReplicateState.Ticked);
+
+        Physics.Simulate(Time.fixedDeltaTime);
+        yield return new WaitForFixedUpdate();
+    }
+
+    Assert.That(_prometeo.ThrottleAxis, Is.GreaterThan(0f));
+    Assert.That(_prometeo.carSpeed, Is.GreaterThan(0f));
+}
+```
+
+Каждый тест создаёт тестовый автомобиль с 4 `WheelCollider` и плоскость-землю:
+
+```csharp
+private GameObject CreateTestCar()
+{
+    var car = new GameObject("TestCar");
+    var rb = car.AddComponent<Rigidbody>();
+    rb.mass = 1200f;
+    rb.interpolation = RigidbodyInterpolation.Interpolate;
+
+    var prometeo = car.AddComponent<PrometeoCarController>();
+    prometeo.maxSpeed = 90;
+    prometeo.bodyMassCenter = new Vector3(0f, -0.5f, 0f);
+
+    prometeo.frontLeftCollider = CreateWheel("FL", car, new Vector3(-0.8f, -0.3f, 1.2f));
+    // ... остальные колёса
+
+    prometeo.InitializeManual();
+    return car;
+}
+```
+
+**Test (обычный NUnit)** — чистые unit-тесты без Unity-зависимостей:
+
+```csharp
+[Test]
+public void Constructor_SetsAxisFieldsCorrectly()
+{
+    PredictionRigidbody prb = new PredictionRigidbody();
+    VehicleReconcileData data = new VehicleReconcileData(
+        prb, 0.5f, 0.75f, 0f, true, false);
+
+    Assert.That(data.SteeringAxis, Is.EqualTo(0.5f).Within(0.0001f));
+    Assert.That(data.ThrottleAxis, Is.EqualTo(0.75f).Within(0.0001f));
+    Assert.That(data.IsDrifting, Is.EqualTo(true));
+}
+```
+
+### Тестирование VehicleInputSource
+
+`VehicleInputSource` тестируется в двух режимах — PC (клавиатура) и Android (touch). В headless-окружении Zenject недоступен, поэтому зависимости инжектятся через reflection:
+
+```csharp
+[SetUp]
+public void SetUp()
+{
+    _buildConfig = ScriptableObject.CreateInstance<BuildConfig>();
+    _source = _sourceGo.AddComponent<VehicleInputSource>();
+
+    var constructMethod = typeof(VehicleInputSource).GetMethod(
+        "Construct",
+        BindingFlags.NonPublic | BindingFlags.Instance);
+    constructMethod.Invoke(_source, new object[] { _buildConfig });
+}
+
+[Test]
+public void Read_OnAndroid_ReturnsTouchInput()
+{
+    SetBuildPlatform(Platform.Android);
+
+    _source.SetTouchThrottle(0.8f);
+    _source.SetTouchSteering(-0.5f);
+    _source.SetTouchHandbrake(true);
+
+    VehicleInput input = _source.Read();
+
+    Assert.That(input.Throttle, Is.EqualTo(0.8f).Within(0.0001f));
+    Assert.That(input.Handbrake, Is.EqualTo(true));
+}
+```
+
+### Что покрывается
+
+| Тест-файл | Что проверяет |
+|---|---|
+| `CarPhysicsTests.cs` | Ускорение, торможение, поворот колёс, handbrake, deceleration, restore state |
+| `VehiclePhysicsMotorTests.cs` | Тот же путь через `motor.Simulate()` — без Prometeo напрямую |
+| `VehicleInputSourceTests.cs` | PC → Neutral, Android → Touch values, clamping, reset |
+| `VehicleReconcileDataTests.cs` | Конструктор, tick get/set, dispose, parameterized cases |
+| `VehicleReplicateDataTests.cs` | Replicate data integrity |
+| `VehiclePredictionDataIntegrityTests.cs` | Целостность данных предсказания |
+
+---
+
+## Известные решения
+
+### FishNet + Zenject DI для спавн-объектов
+
+**Проблема:** FishNet спавнит `NetworkObject` на клиенте напрямую через `Instantiate`, минуя Zenject-контейнеры. Компоненты на спавн-объектах не получают DI-зависимости.
+
+**Решение:** Два механизма — `FishNetZenjectBridge` и `ZenjectObjectPool`.
+
+#### FishNetZenjectBridge
+
+Подписывается на `OnBeforeSpawn` и делает `InjectGameObject` перед появлением объекта:
+
+```csharp
+public sealed class FishNetZenitectBridge : MonoBehaviour
+{
+    private readonly Dictionary<int, DiContainer> _containersBySceneHandle = new();
+    private DiContainer _projectContainer;
+
+    private void Awake() =>
+        _projectContainer = ProjectContext.Instance.Container;
+
+    private void OnEnable() =>
+        InstanceFinder.ClientManager.Objects.OnBeforeSpawn += InjectBeforeSpawn;
+
+    private void OnDisable() =>
+        InstanceFinder.ClientManager.Objects.OnBeforeSpawn -= InjectBeforeSpawn;
+
+    public void RegisterSceneContainer(Scene scene, DiContainer container) =>
+        _containersBySceneHandle[scene.handle] = container;
+
+    private void InjectBeforeSpawn(NetworkObject networkObject)
+    {
+        DiContainer container = ResolveContainer(networkObject.gameObject.scene);
+        container?.InjectGameObject(networkObject.gameObject);
+    }
+
+    private DiContainer ResolveContainer(Scene scene) =>
+        _containersBySceneHandle.TryGetValue(scene.handle, out var c) ? c : _projectContainer;
+}
+```
+
+Scene-контейнеры регистрируются при загрузке сцены и убираются при выгрузке:
+
+```csharp
+bridge.RegisterSceneContainer(scene, sceneContext.Container);
+bridge.UnregisterSceneContainer(scene);
+```
+
+#### ZenjectObjectPool
+
+Кастомный `ObjectPool` (наследуется от `FishNet.Utility.Extension.ObjectPool`), который использует `container.InstantiatePrefab` вместо `Object.Instantiate`:
+
+```csharp
+public class ZenjectObjectPool : ObjectPool
+{
+    public override NetworkObject RetrieveObject(
+        int prefabId, ushort collectionId, ObjectPoolRetrieveOption options,
+        Transform parent = null, Vector3? nullablePosition = null,
+        Quaternion? nullableRotation = null, Vector3? nullableScale = null,
+        bool asServer = true)
+    {
+        NetworkObject prefab = GetPrefab(prefabId, collectionId, asServer);
+        return InstantiateWithZenject(prefab.gameObject, position, rotation, scale, parent, makeActive: false);
+    }
+
+    private NetworkObject InstantiateWithZenject(
+        GameObject prefab, Vector3 pos, Quaternion rot, Vector3 scale,
+        Transform parent, bool makeActive)
+    {
+        var container = GetSceneContainer();
+        var go = container.InstantiatePrefab(prefab, pos, rot, parent);
+        go.SetActive(false);
+        var nob = go.GetComponent<NetworkObject>();
+        nob.transform.localScale = scale;
+        if (makeActive) go.SetActive(true);
+        return nob;
+    }
+}
+```
+
+**Как это работает вместе:**
+1. `ZenjectObjectPool` используется сервером/хостом при создании объектов — `container.InstantiatePrefab` сразу инжектит зависимости
+2. `FishNetZenjectBridge` работает на клиенте — подписывается на `OnBeforeSpawn` и делает `InjectGameObject` для объектов, пришедших с сервера
+3. Bridge поддерживает отдельные контейнеры на сцену (`RegisterSceneContainer`) с fallback на `ProjectContext.Container`

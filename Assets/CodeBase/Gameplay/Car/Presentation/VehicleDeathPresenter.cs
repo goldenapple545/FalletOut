@@ -8,10 +8,18 @@ namespace CodeBase.CodeBase.Gameplay.Car.Presentation
     public sealed class VehicleDeathPresenter : MonoBehaviour
     {
         [SerializeField] private PlayerMatchState playerState;
-        [SerializeField] private ParticleSystem explosionEffect;
-        [SerializeField] private GameObject[] bodyVisuals;
+        [SerializeField] private GameObject explosionEffect;
+        [SerializeField] private ParticleSystem[] fireEffects;
+        [SerializeField] private GameObject[] aliveParts;
+        [SerializeField] private GameObject[] damageParts;
         [SerializeField] private PrometeoCarController carController;
         [SerializeField] private Rigidbody vehicleRigidbody;
+
+        [Header("Audio")] 
+        [SerializeField] private AudioSource source;
+        [SerializeField] private AudioClip clip;
+        
+        private GameObject _explosionInstance;
 
         private void Awake()
         {
@@ -44,10 +52,31 @@ namespace CodeBase.CodeBase.Gameplay.Car.Presentation
             SetInputEnabled(isAlive);
             SetVisualsAlive(isAlive);
 
+            SetEffectsActive(isAlive);
+            
             if (!isAlive)
-                explosionEffect?.Play();
-            else
-                explosionEffect?.Stop();
+                source.PlayOneShot(clip);
+        }
+
+        private void SetEffectsActive(bool isAlive)
+        {
+            if (_explosionInstance != null)
+                Destroy(_explosionInstance);
+            
+            if (!isAlive)
+            {
+                _explosionInstance = Instantiate(explosionEffect, transform);
+                
+                Destroy(explosionEffect, 5f);
+            }
+            
+            foreach (var fire in fireEffects)
+            {
+                if (!isAlive)
+                    fire.Play();
+                else
+                    fire.Stop();
+            }
         }
 
         private void SetInputEnabled(bool enabled)
@@ -62,10 +91,16 @@ namespace CodeBase.CodeBase.Gameplay.Car.Presentation
 
         private void SetVisualsAlive(bool isAlive)
         {
-            foreach (GameObject visual in bodyVisuals)
+            foreach (GameObject visual in aliveParts)
             {
                 if (visual != null)
                     visual.SetActive(isAlive);
+            }
+            
+            foreach (GameObject visual in damageParts)
+            {
+                if (visual != null)
+                    visual.SetActive(!isAlive);
             }
         }
     }
