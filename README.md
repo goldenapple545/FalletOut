@@ -13,6 +13,11 @@
   - [Платформы](#платформы)
 - [Структура проекта](#структура-проекта)
   - [Infrastructure](#infrastructure--загрузка-и-жизненный-цикл-приложения)
+    - [Точка входа: AppBootstrapper](#точка-входа-appbootstrapper)
+    - [GameStateMachine](#gamestatemachine)
+    - [Переходы между сценами](#переходы-между-сценами)
+    - [Подгрузка конфигов](#подгрузка-конфигов-staticdataservice)
+    - [SessionService](#sessionservice)
   - [Мультиплеер](#мультиплеер--лобби-матч-клиентское-предсказание)
     - [Лобби-система](#лобби-система)
     - [Матч-система](#матч-система)
@@ -36,7 +41,7 @@ FalletOut — это мультиплеерный проект, разрабат
 
 ### Архитектура и реактивное программирование
 - **R3 (Reactive Extensions v3)** — реактивная библиотека от Cysharp для событийной архитектуры
-- **Zenject - DI фреймворк
+- **Zenject** - DI фреймворк
 
 ### Инструменты разработки
 - **Unity MCP** — интеграция с AI-ассистентами (CoplayDev/unity-mcp)
@@ -83,15 +88,239 @@ Assets/CodeBase/Infrastructure/
     └── Session/                # Управление сетевой сессией
 ```
 
-**GameStateMachine** — типизированный конечный автомат (`Dictionary<Type, IState>`):
-- **BootstrapState** — начальное состояние, сразу переходит в `GameLoopState`
-- **GameLoopState** — сигнализирует `GameplaySceneLifecycle.NotifyGameplaySceneReady()`, подписчики реагируют на готовность геймплей-сцены
-- **LoadGameplaySceneState** — сигнализирует `NotifyGameplaySceneUnloading()` при выгрузке сцены
-- Переходы driven через FishNet: `FishNetSceneFlowAdapter` подписан на `OnLoadEnd` → `Enter<GameLoopState>()`, `OnUnloadStart` → `Enter<LoadGameplaySceneState>()`
+#### Точка входа: AppBootstrapper
 
-**StaticDataService** — централизованный сервис для работы с ScriptableObject конфигами. Подгружается на этапе `WarmupStaticDataStep` до того, как игра становится готова к работе.
+`AppBootstrapper` регистрируется как `NonLazy` синглтон и запускает все `IAppBootstrapStep` последовательно:
 
-**AppReadyService** — `UniTaskCompletionSource`, сигнализирует о завершении всех bootstrap-шагов. Внешние системы (UI, тесты) ждут через `WaitUntilReadyAsync()`.
+```csharp
+public sealed class AppBootstrapper : IInitializable, IDisposable
+{
+    private readonly IReadOnlyList<IAppBootstrapStep> _steps;
+    private readonly IAppReadyService _appReadyService;
+
+    public void Initialize()
+    {
+        RunAsync(_cts.Token).Forget();
+    }
+
+    private async UniTaskVoid RunAsync(CancellationToken ct)
+    {
+        try
+        {
+            foreach (var step in _steps)
+                await step.ExecuteAsync(ct);
+
+            _appReadyService.MarkReady();
+        }
+        catch (OperationCanceledException) { }
+        catch (Exception ex)
+        {
+            Debug.LogException(ex);
+        }
+    }
+}
+```
+
+Шаги собираются через Zenject в `BootstrapStepsInstaller`:
+
+```csharp
+Container.BindInterfacesAndSelfTo<WarmupStaticDataStep>().AsSingle();
+Container.BindInterfacesAndSelfTo<InitializeGameStateStep>().AsSingle();
+```
+
+#### GameStateMachine
+
+Типизированный конечный автомат, хранящий состояния в `Dictionary<Type, IState>`. Переходы выполняются по типу состояния:
+
+```csharp
+public sealed class GameStateMachine : IGameStateMachine
+{
+    private readonly Dictionary<Type, IState> _states;
+    private IState _currentState;
+
+    public GameStateMachine(GameplaySceneLifecycle SceneLifecycle)
+    {
+        _states = new Dictionary<Type, IState>();
+        _states[typeof(BootstrapState)] = new BootstrapState(EnterByType);
+        _states[typeof(LoadGameplaySceneState)] = new LoadGameplaySceneState(SceneLifecycle);
+        _states[typeof(GameLoopState)] = new GameLoopState(SceneLifecycle);
+    }
+
+    public void Enter<TState>() where TState : class, IState
+    {
+        _currentState?.Exit();
+        IState state = _states[typeof(TState)];
+        _currentState = state;
+        state.Enter();
+    }
+}
+```
+
+**Состояния:**
+
+- **BootstrapState** — pass-through, сразу переходит в `GameLoopState`:
+  ```csharp
+  public sealed class BootstrapState : IState
+  {
+      private readonly Action<Type> _enter;
+      public BootstrapState(Action<Type> enter) => _enter = enter;
+      public void Enter() => _enter(typeof(GameLoopState));
+      public void Exit() { }
+  }
+  ```
+
+- **GameLoopState** — сигнализирует о готовности геймплей-сцены:
+  ```csharp
+  public void Enter() => _sceneLifecycle.NotifyGameplaySceneReady();
+  public void Exit() => _sceneLifecycle.NotifyGameplaySceneUnloading();
+  ```
+
+- **LoadGameplaySceneState** — сигнализирует о выгрузке сцены.
+
+#### Переходы между сценами
+
+Сцены загружаются/выгружаются через FishNet, а `FishNetSceneFlowAdapter` мостит это с GameStateMachine:
+
+```csharp
+public sealed class FishNetSceneFlowAdapter : IInitializable, IDisposable
+{
+    private readonly NetworkManager _networkManager;
+    private readonly IGameStateMachine _gameStateMachine;
+
+    public void Initialize()
+    {
+        _networkManager.SceneManager.OnLoadEnd += OnLoadEnd;
+        _networkManager.SceneManager.OnUnloadStart += OnUnloadStart;
+    }
+
+    private void OnLoadEnd(SceneLoadEndEventArgs args) =>
+        _gameStateMachine.Enter<GameLoopState>();
+
+    private void OnUnloadStart(SceneUnloadStartEventArgs args) =>
+        _gameStateMachine.Enter<LoadGameplaySceneState>();
+}
+```
+
+**GameplaySceneLifecycle** — флаг-based менеджер с событиями:
+
+```csharp
+public sealed class GameplaySceneLifecycle : IGameplaySceneLifecycle
+{
+    public bool IsGameplaySceneReady { get; private set; }
+    public event Action GameplaySceneReady;
+    public event Action GameplaySceneUnloading;
+
+    public void NotifyGameplaySceneReady()
+    {
+        if (IsGameplaySceneReady) return;
+        IsGameplaySceneReady = true;
+        GameplaySceneReady?.Invoke();
+    }
+
+    public void NotifyGameplaySceneUnloading()
+    {
+        if (!IsGameplaySceneReady) return;
+        IsGameplaySceneReady = false;
+        GameplaySceneUnloading?.Invoke();
+    }
+}
+```
+
+Загрузка сцен — обёртка над `SceneManager.LoadSceneAsync` с UniTask:
+
+```csharp
+public async UniTask LoadSceneAsync(string sceneName, LoadSceneMode mode = LoadSceneMode.Single, CancellationToken ct = default)
+{
+    await SceneManager.LoadSceneAsync(sceneName, mode).ToUniTask(cancellationToken: ct);
+}
+```
+
+#### Подгрузка конфигов (StaticDataService)
+
+`StaticDataService` загружает ScriptableObject-конфиги из `Resources/` на этапе `WarmupStaticDataStep`:
+
+```csharp
+public sealed class StaticDataService : IStaticDataService
+{
+    private const string VehicleConfigPath = "StaticData/VehicleConfig";
+    private const string CollisionDamageConfigPath = "StaticData/CollisionDamageConfig";
+    private const string MatchRulesConfigPath = "StaticData/MatchRulesConfig";
+
+    public VehicleConfig VehicleConfig { get; private set; }
+    public CollisionDamageConfig CollisionDamageConfig { get; private set; }
+    public MatchRulesConfig MatchRulesConfig { get; private set; }
+
+    public async UniTask WarmupAsync(CancellationToken ct)
+    {
+        VehicleConfig = await LoadAsync<VehicleConfig>(VehicleConfigPath, ct);
+        CollisionDamageConfig = await LoadAsync<CollisionDamageConfig>(CollisionDamageConfigPath, ct);
+        MatchRulesConfig = await LoadAsync<MatchRulesConfig>(MatchRulesConfigPath, ct);
+    }
+
+    private static async UniTask<T> LoadAsync<T>(string path, CancellationToken ct) where T : UnityEngine.Object
+    {
+        ResourceRequest request = Resources.LoadAsync<T>(path);
+        await request.ToUniTask(cancellationToken: ct);
+
+        T asset = request.asset as T;
+        if (asset == null)
+            throw new Exception($"Static data asset of type {typeof(T).Name} not found at Resources/{path}");
+
+        return asset;
+    }
+}
+```
+
+Шаг загрузки:
+
+```csharp
+public sealed class WarmupStaticDataStep : IAppBootstrapStep
+{
+    private readonly IStaticDataService _staticDataService;
+    public WarmupStaticDataStep(IStaticDataService staticDataService) => _staticDataService = staticDataService;
+    public UniTask ExecuteAsync(CancellationToken ct) => _staticDataService.WarmupAsync(ct);
+}
+```
+
+#### SessionService
+
+Тонкий фасад над FishNet `NetworkManager`:
+
+```csharp
+public sealed class SessionService : ISessionService, IInitializable, IDisposable
+{
+    public bool IsClientStarted => NetworkManager.IsClientStarted;
+    public bool IsServerStarted => NetworkManager.IsServerStarted;
+    public bool IsHostStarted => NetworkManager.IsHostStarted;
+    public int ConnectedClientsCount => NetworkManager.ServerManager.Clients.Count;
+
+    public event Action ClientAuthenticated;
+    public event Action<ClientConnectionStateArgs> ClientConnectionStateChanged;
+    public event Action<ServerConnectionStateArgs> ServerConnectionStateChanged;
+    public event Action<NetworkConnection, RemoteConnectionStateArgs> RemoteConnectionStateChanged;
+
+    public void Initialize()
+    {
+        _networkManager.ClientManager.OnAuthenticated += HandleAuthenticated;
+        _networkManager.ClientManager.OnClientConnectionState += HandleClientConnectionState;
+        _networkManager.ServerManager.OnServerConnectionState += HandleServerConnectionState;
+        _networkManager.ServerManager.OnRemoteConnectionState += HandleRemoteConnectionState;
+    }
+
+    public void StartHost(string localAddress = "127.0.0.1")
+    {
+        NetworkManager.TransportManager.Transport.SetClientAddress(localAddress);
+        NetworkManager.ServerManager.StartConnection();
+        NetworkManager.ClientManager.StartConnection();
+    }
+
+    public void StartClient(string address)
+    {
+        NetworkManager.TransportManager.Transport.SetClientAddress(address);
+        NetworkManager.ClientManager.StartConnection();
+    }
+}
+```
 
 ---
 
