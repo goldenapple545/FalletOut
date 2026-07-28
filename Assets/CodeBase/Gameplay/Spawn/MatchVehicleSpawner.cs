@@ -13,30 +13,39 @@ namespace CodeBase.Gameplay.Spawn
         [SerializeField] private NetworkObject vehiclePrefab;
         [SerializeField] private ArenaSpawnRegistry spawnRegistry;
 
-        private readonly Dictionary<int, NetworkObject> _vehiclesByClientId = new();
+        private readonly Dictionary<int, NetworkObject> _vehiclesByClientId =
+            new();
 
-        private DiContainer _projectContainer;
+        private DiContainer _sceneContainer;
 
         [Inject]
-        private void Construct(DiContainer projectContainer)
+        private void Construct(DiContainer sceneContainer)
         {
-            _projectContainer = projectContainer;
+            _sceneContainer = sceneContainer;
         }
-        
+
         public override void OnStartServer()
         {
             base.OnStartServer();
 
             NetworkManager.SceneManager.OnClientPresenceChangeEnd +=
                 HandleClientPresenceChanged;
-            
-            foreach (NetworkConnection connection in ServerManager.Clients.Values)
+
+            foreach (NetworkConnection connection in
+                     ServerManager.Clients.Values)
             {
-                if (_vehiclesByClientId.ContainsKey(connection.ClientId))
-                    return;
-                
-                if (connection.IsActive)
-                    SpawnVehicleFor(connection);
+                if (!connection.IsActive)
+                    continue;
+
+                if (_vehiclesByClientId.ContainsKey(
+                        connection.ClientId))
+                {
+                    continue;
+                }
+
+                // Не спавним здесь вслепую.
+                // Клиент попадёт в SpawnVehicleFor через
+                // OnClientPresenceChangeEnd, когда станет observer сцены.
             }
         }
 
@@ -50,7 +59,8 @@ namespace CodeBase.Gameplay.Spawn
             base.OnStopServer();
         }
 
-        private void HandleClientPresenceChanged(ClientPresenceChangeEventArgs args)
+        private void HandleClientPresenceChanged(
+            ClientPresenceChangeEventArgs args)
         {
             if (!args.Added)
                 return;
@@ -72,7 +82,8 @@ namespace CodeBase.Gameplay.Spawn
             if (vehiclePrefab == null)
             {
                 Debug.LogError(
-                    $"[{nameof(MatchVehicleSpawner)}] Vehicle prefab is not assigned.",
+                    $"[{nameof(MatchVehicleSpawner)}] " +
+                    "Vehicle prefab is not assigned.",
                     this);
 
                 return;
@@ -81,22 +92,35 @@ namespace CodeBase.Gameplay.Spawn
             if (spawnRegistry == null || spawnRegistry.Count == 0)
             {
                 Debug.LogError(
-                    $"[{nameof(MatchVehicleSpawner)}] Spawn registry is not configured.",
+                    $"[{nameof(MatchVehicleSpawner)}] " +
+                    "Spawn registry is not configured.",
+                    this);
+
+                return;
+            }
+
+            if (_sceneContainer == null)
+            {
+                Debug.LogError(
+                    $"[{nameof(MatchVehicleSpawner)}] " +
+                    "Scene DI container is not ready.",
                     this);
 
                 return;
             }
 
             int spawnIndex = _vehiclesByClientId.Count;
-            Transform spawnPoint = spawnRegistry.GetSpawnPoint(spawnIndex);
+            Transform spawnPoint =
+                spawnRegistry.GetSpawnPoint(spawnIndex);
 
             NetworkObject vehicle = Instantiate(
                 vehiclePrefab,
                 spawnPoint.position,
                 spawnPoint.rotation);
 
-            _projectContainer.InjectGameObject(vehicle.gameObject);
-            
+            // Важно: здесь именно SceneContext container.
+            _sceneContainer.InjectGameObject(vehicle.gameObject);
+
             ServerManager.Spawn(vehicle, connection);
 
             _vehiclesByClientId.Add(connection.ClientId, vehicle);

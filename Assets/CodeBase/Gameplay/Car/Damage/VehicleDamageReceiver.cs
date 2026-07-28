@@ -26,11 +26,11 @@ namespace CodeBase.CodeBase.Gameplay.Car.Damage
         private readonly Dictionary<int, float> _nextDamageTimeByAttacker =
             new();
 
-        // [Inject]
-        // private void Construct(VehicleDamageHistory VehicleDamageHistory)
-        // {
-        //     _damageHistory = VehicleDamageHistory;
-        // } 
+        [Inject]
+        private void Construct(VehicleDamageHistory VehicleDamageHistory)
+        {
+            _damageHistory = VehicleDamageHistory;
+        } 
         
         private void Awake()
         {
