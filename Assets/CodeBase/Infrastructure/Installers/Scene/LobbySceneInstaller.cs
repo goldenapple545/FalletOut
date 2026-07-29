@@ -1,4 +1,5 @@
-﻿using CodeBase.Gameplay.Network.UI;
+﻿using CodeBase.CodeBase.Gameplay.Network.UI.Lobby;
+using CodeBase.Gameplay.Network.UI;
 using Zenject;
 
 namespace CodeBase.Infrastructure.Installers.Scene

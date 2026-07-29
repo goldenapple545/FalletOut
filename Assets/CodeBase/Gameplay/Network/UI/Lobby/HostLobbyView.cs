@@ -1,10 +1,12 @@
-﻿using CodeBase.Gameplay.Network.Match;
+﻿using CodeBase.Gameplay.Network;
+using CodeBase.Gameplay.Network.Match;
+using CodeBase.Gameplay.Network.UI;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using Zenject;
 
-namespace CodeBase.Gameplay.Network.UI
+namespace CodeBase.CodeBase.Gameplay.Network.UI.Lobby
 {
     public sealed class HostLobbyView : LobbyPanelView
     {
@@ -13,6 +15,8 @@ namespace CodeBase.Gameplay.Network.UI
         [SerializeField] private TMP_Text playersCountText;
         [SerializeField] private Button leaveHostButton;
         [SerializeField] private Button startMatchButton;
+
+        [SerializeField] private LevelSelectorUI levelSelector;
 
         private LobbySessionService _lobbyService;
         private IMatchSceneService _matchSceneService;
@@ -37,10 +41,12 @@ namespace CodeBase.Gameplay.Network.UI
             _lobbyService.HostPlayersChanged += OnPlayersChanged;
             _lobbyService.ServerNameChanged += OnServerNameChanged;
             _lobbyService.TransitionStateChanged += OnTransitionChanged;
-
+            
             ApplyMode(_lobbyService.Mode);
             OnServerNameChanged(_lobbyService.CurrentServerName);
             RefreshButtons();
+
+            levelSelector.Init();
         }
 
         private void OnDisable()

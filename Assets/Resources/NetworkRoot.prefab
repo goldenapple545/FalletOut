@@ -170,8 +170,7 @@ MonoBehaviour:
   port: 47777
   searchTimeout: 3
   automatic: 0
-  needLog: 1
-  maxPlayers: 6
+  needLog: 0
 --- !u!114 &7927200639014251451
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -8,7 +8,8 @@ namespace CodeBase.CodeBase.Infrastructure.Services.StaticData
     public interface IStaticDataService
     {
         MatchRulesConfig MatchRulesConfig { get; }
-        
+        LevelsRegistry LevelsRegistry { get; }
+
         UniTask WarmupAsync(CancellationToken ct);
     }
 }

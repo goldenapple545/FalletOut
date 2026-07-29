@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Net;
 using System.Threading;
+using CodeBase.CodeBase.Infrastructure.Services.StaticData;
+using CodeBase.Data;
 using CodeBase.Infrastructure.Services.Session;
 using Cysharp.Threading.Tasks;
 using FishNet.Connection;
@@ -26,6 +28,7 @@ namespace CodeBase.Gameplay.Network
 
         private readonly ISessionService _sessionService;
         private readonly NameLanDiscoveryTransport _lanDiscovery;
+        private readonly IStaticDataService _staticDataService;
         private readonly float _autoRefreshInterval;
 
         private readonly List<ServerInfo> _foundServers = new();
@@ -39,6 +42,8 @@ namespace CodeBase.Gameplay.Network
         private bool _intentionalServerStop;
         private bool _disposed;
 
+        public LevelConfig SelectedLevel { get; set; }
+
         public LobbyMode Mode { get; private set; } = LobbyMode.Offline;
         public bool IsTransitioning => _transitioning;
         public IReadOnlyList<ServerInfo> FoundServers => _foundServers;
@@ -51,18 +56,27 @@ namespace CodeBase.Gameplay.Network
         public event Action<bool> ClientConnectionResult;
         public event Action<bool> TransitionStateChanged;
         public event Action<string> ServerNameChanged;
+        public event Action<LevelConfig> SelectedLevelChanged;
 
         public LobbySessionService(
             ISessionService sessionService,
             NameLanDiscoveryTransport lanDiscovery,
+            IStaticDataService staticDataService,
             float autoRefreshInterval = 2f)
         {
             _sessionService = sessionService ??
                 throw new ArgumentNullException(nameof(sessionService));
 
             _lanDiscovery = lanDiscovery ? lanDiscovery : throw new ArgumentNullException(nameof(lanDiscovery));
+            _staticDataService = staticDataService ?? throw new ArgumentNullException(nameof(staticDataService));
 
             _autoRefreshInterval = Mathf.Max(1f, autoRefreshInterval);
+
+            if (_staticDataService.LevelsRegistry != null &&
+                _staticDataService.LevelsRegistry.Levels.Count > 0)
+            {
+                SelectedLevel = _staticDataService.LevelsRegistry.Levels[0];
+            }
 
             _sessionService.ClientConnectionStateChanged += OnClientConnectionState;
             _sessionService.ClientAuthenticated += OnClientAuthenticated;
@@ -93,6 +107,15 @@ namespace CodeBase.Gameplay.Network
                 return;
 
             RunTransition(StartHostAsync);
+        }
+
+        public void SetSelectedLevel(LevelConfig level)
+        {
+            if (level == null || SelectedLevel == level)
+                return;
+
+            SelectedLevel = level;
+            SelectedLevelChanged?.Invoke(level);
         }
 
         public void ConnectToServer(IPEndPoint endPoint)

@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using CodeBase.CodeBase.Gameplay.Network.UI.Lobby;
+using UnityEngine;
 using Zenject;
 
 namespace CodeBase.Gameplay.Network.UI
@@ -16,7 +17,7 @@ namespace CodeBase.Gameplay.Network.UI
             HostLobbyView hostView,
             ClientLobbyView clientView)
         {
-            Debug.Log($"[LobbyScreenController]: constrcu");
+            Debug.Log($"[LobbyScreenController]: construct");
             _lobbyService = lobbyService;
             _browserView = browserView;
             _hostView = hostView;

@@ -1,4 +1,5 @@
 ﻿using CodeBase.CodeBase.Gameplay.Network.Match;
+using CodeBase.CodeBase.Infrastructure.Services.StaticData;
 using CodeBase.Gameplay.Network;
 using CodeBase.Gameplay.Network.Match;
 using CodeBase.Infrastructure.Services.SceneLoader;
@@ -27,15 +28,15 @@ namespace CodeBase.Infrastructure.Installers.Project
             Container.Bind<LobbySessionService>()
                 .AsSingle()
                 .NonLazy();
-            
+
             Container.BindInterfacesAndSelfTo<SessionService>()
                 .AsSingle()
                 .NonLazy();
-            
+
             Container.BindInterfacesAndSelfTo<MatchSceneService>()
                 .AsSingle()
                 .NonLazy();
-            
+
             Container.BindInterfacesTo<FishNetSceneFlowAdapter>()
                 .AsSingle()
                 .NonLazy();
