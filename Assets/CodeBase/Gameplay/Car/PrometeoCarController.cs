@@ -25,38 +25,9 @@ namespace CodeBase.Gameplay.Car
 
     //CAR SETUP
 
-    [Space(20)]
-    //[Header("CAR SETUP")]
-    [Space(10)]
-    [Range(20, 1000)]
-    public int maxSpeed = 90; //The maximum speed that the car can reach in km/h.
-    [Range(10, 400)]
-    public int maxReverseSpeed = 45; //The maximum speed that the car can reach while going on reverse in km/h.
-    [Range(1, 10000)]
-    public int accelerationMultiplier = 2000; // Motor torque applied to wheels. Higher = faster acceleration.
-    [Space(10)]
-    [Range(10, 70)]
-    public int maxSteeringAngle = 27; // The maximum angle that the tires can reach while rotating the steering wheel.
-    [Range(0.1f, 1f)]
-    public float steeringSpeed = 0.5f; // How fast the steering wheel turns.
-    [Space(10)]
-    [Range(100, 1000)]
-    public int brakeForce = 350; // The strength of the wheel brakes.
-    [Range(1, 50)]
-    public int decelerationMultiplier = 2; // How fast the car decelerates when the user is not using the throttle.
-    [Range(1, 50)]
-    public int brakeMultiplier = 2;
-    [Range(1, 50)]
-    public int handbrakeDriftMultiplier = 5; // How much grip the car loses when the user hit the handbrake.
-    [Space(10)]
-    public Vector3 bodyMassCenter; // This is a vector that contains the center of mass of the car. I recommend to set this value
-    // in the points x = 0 and z = 0 of your car. You can select the value that you want in the y axis,
-    // however, you must notice that the higher this value is, the more unstable the car becomes.
-    // Usually the y value goes from 0 to 1.5.
+    [SerializeField] private VehicleStats stats;
 
     //WHEELS
-
-    //[Header("WHEELS")]
 
     /*
       The following variables are used to store the wheels' data of the car. We need both the mesh-only game objects and wheel
@@ -160,7 +131,7 @@ namespace CodeBase.Gameplay.Car
         //gameObject. Also, we define the center of mass of the car with the Vector3 given
         //in the inspector.
         carRigidbody = gameObject.GetComponent<Rigidbody>();
-        carRigidbody.centerOfMass = bodyMassCenter;
+        carRigidbody.centerOfMass = stats.bodyMassCenter;
 
         //Initial setup to calculate the drift value of the car. This part could look a bit
         //complicated, but do not be afraid, the only thing we're doing here is to save the default
@@ -282,24 +253,24 @@ namespace CodeBase.Gameplay.Car
         steeringAxis = Mathf.MoveTowards(
             steeringAxis,
             Mathf.Clamp(steeringInput, -1f, 1f),
-            10f * steeringSpeed * tickDelta);
+            10f * stats.steeringSpeed * tickDelta);
 
         ApplySteeringAngle();
     }
 
     private void ApplySteeringAngle()
     {
-        float steeringAngle = steeringAxis * maxSteeringAngle;
+        float steeringAngle = steeringAxis * stats.maxSteeringAngle;
 
         frontLeftCollider.steerAngle = Mathf.Lerp(
             frontLeftCollider.steerAngle,
             steeringAngle,
-            steeringSpeed);
+            stats.steeringSpeed);
 
         frontRightCollider.steerAngle = Mathf.Lerp(
             frontRightCollider.steerAngle,
             steeringAngle,
-            steeringSpeed);
+            stats.steeringSpeed);
     }
 
     private void UpdateDrive(float throttleInput, float tickDelta)
@@ -330,7 +301,7 @@ namespace CodeBase.Gameplay.Car
         if (throttleAxis > 0f && localVelocityZ < -1f)
         {
             SetMotorTorque(0f);
-            SetBrakeTorque(brakeForce);
+            SetBrakeTorque(stats.brakeForce);
             ApplyCoasting(tickDelta);
             return;
         }
@@ -338,13 +309,13 @@ namespace CodeBase.Gameplay.Car
         if (throttleAxis < 0f && localVelocityZ > 1f)
         {
             SetMotorTorque(0f);
-            SetBrakeTorque(brakeForce);
+            SetBrakeTorque(stats.brakeForce);
             ApplyCoasting(tickDelta);
             return;
         }
 
         bool isForward = throttleAxis > 0f;
-        float speedLimit = isForward ? maxSpeed : maxReverseSpeed;
+        float speedLimit = isForward ? stats.maxSpeed : stats.maxReverseSpeed;
 
         if (Mathf.Abs(carSpeed) >= speedLimit)
         {
@@ -355,7 +326,7 @@ namespace CodeBase.Gameplay.Car
         SetBrakeTorque(0f);
 
         float motorTorque =
-            accelerationMultiplier * throttleAxis;
+            stats.accelerationMultiplier * throttleAxis;
 
         SetMotorTorque(motorTorque);
     }
@@ -363,7 +334,7 @@ namespace CodeBase.Gameplay.Car
     private void ApplyCoasting(float tickDelta)
     {
         float damping =
-            1f / (1f + 0.025f * decelerationMultiplier);
+            1f / (1f + 0.025f * stats.decelerationMultiplier);
 
         // Применяем тот же damping с учётом длительности tick.
         float referenceDelta = 0.02f;
@@ -397,7 +368,7 @@ namespace CodeBase.Gameplay.Car
     {
         float driftMultiplier = Mathf.Lerp(
             1f,
-            handbrakeDriftMultiplier,
+            stats.handbrakeDriftMultiplier,
             driftingAxis);
 
         FLwheelFriction.extremumSlip =

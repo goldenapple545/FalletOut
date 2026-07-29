@@ -1,4 +1,5 @@
 ﻿using CodeBase.CodeBase.Gameplay.Network.Match;
+using CodeBase.Gameplay.Car;
 using FishNet.Object;
 using FishNet.Object.Synchronizing;
 using R3;
@@ -9,8 +10,8 @@ namespace CodeBase.CodeBase.Gameplay.Network.Match
 {
     public sealed class PlayerMatchState : NetworkBehaviour
     {
-        [Header("Server defaults")]
-        [SerializeField, Min(1)] private int defaultMaxHealth = 100;
+        [Header("Server defaults")] 
+        [SerializeField] private VehicleStats config;
         [SerializeField] private Color defaultVehicleColor = Color.white;
         [SerializeField] private string defaultPlayerName = "Player";
 
@@ -118,7 +119,7 @@ namespace CodeBase.CodeBase.Gameplay.Network.Match
 
             _playerName.Value = playerName;
 
-            ResetForMatchServer(defaultMaxHealth, color);
+            ResetForMatchServer(config.maxHealth, color);
 
             _matchManager.RegisterPlayerServer(this);
         }

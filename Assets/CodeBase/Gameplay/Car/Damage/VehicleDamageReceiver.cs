@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using CodeBase.CodeBase.Gameplay.Network.Match;
 using CodeBase.CodeBase.Gameplay.Network.Statistics;
+using CodeBase.Gameplay.Car;
 using FishNet.Object;
 using UnityEngine;
 using Zenject;
@@ -15,11 +16,8 @@ namespace CodeBase.CodeBase.Gameplay.Car.Damage
         [SerializeField] private Rigidbody vehicleRigidbody;
         [SerializeField] private PlayerMatchState playerState;
 
-        [Header("Damage formula")]
-        [SerializeField, Min(0f)] private float minimumImpactSpeed = 4f;
-
-        [SerializeField, Min(0f)] private float damagePerSpeed = 6f;
-        [SerializeField, Min(0f)] private float pairCooldownSeconds = 0.5f;
+        [Header("Damage formula")] 
+        [SerializeField] private VehicleStats config;
 
         private VehicleDamageHistory _damageHistory;
 
@@ -100,12 +98,12 @@ namespace CodeBase.CodeBase.Gameplay.Car.Damage
                 relativeVelocity,
                 directionToVictim);
 
-            if (impactSpeed < minimumImpactSpeed)
+            if (impactSpeed < config.minimumImpactSpeed)
                 return;
 
             int baseDamage = Mathf.CeilToInt(
-                (impactSpeed - minimumImpactSpeed) *
-                damagePerSpeed);
+                (impactSpeed - config.minimumImpactSpeed) *
+                config.damagePerSpeed);
 
             if (baseDamage <= 0)
                 return;
@@ -131,7 +129,7 @@ namespace CodeBase.CodeBase.Gameplay.Car.Damage
                     Time.time));
 
             _nextDamageTimeByAttacker[attackerObjectId] =
-                Time.time + pairCooldownSeconds;
+                Time.time + config.pairCooldownSeconds;
 
             Debug.Log(
                 $"[VehicleDamage] {attacker.name} -> {name}; " +

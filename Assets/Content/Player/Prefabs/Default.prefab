@@ -1709,6 +1709,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2922547356944998858}
   - component: {fileID: 7352391912638044952}
+  - component: {fileID: 9067026209122200226}
   - component: {fileID: 3829708129182012639}
   - component: {fileID: 2264628392054573976}
   - component: {fileID: 3112220271104262623}
@@ -1721,7 +1722,7 @@ GameObject:
   - component: {fileID: 6297771369379103815}
   - component: {fileID: 6276976410772586377}
   m_Layer: 0
-  m_Name: Prometheus
+  m_Name: Default
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1775,6 +1776,31 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 2
+--- !u!114 &9067026209122200226
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5751675616803937464}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 839c8f9dcf0ff7749967f38d7d6cd6f0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: CodeBase::CodeBase.Gameplay.Car.VehicleStats
+  maxSpeed: 120
+  maxReverseSpeed: 40
+  accelerationMultiplier: 100
+  maxSteeringAngle: 45
+  steeringSpeed: 0.6
+  brakeForce: 500
+  decelerationMultiplier: 3
+  handbrakeDriftMultiplier: 10
+  bodyMassCenter: {x: 0, y: -0.5, z: 0}
+  maxHealth: 100
+  minimumImpactSpeed: 4
+  damagePerSpeed: 6
+  pairCooldownSeconds: 0.5
 --- !u!114 &3829708129182012639
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1787,15 +1813,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c0fefceefe666bb4682b272ec8c5bdd0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxSpeed: 120
-  maxReverseSpeed: 45
-  accelerationMultiplier: 10
-  maxSteeringAngle: 35
-  steeringSpeed: 0.5
-  brakeForce: 450
-  decelerationMultiplier: 1
-  handbrakeDriftMultiplier: 5
-  bodyMassCenter: {x: 0, y: 0, z: 0}
+  stats: {fileID: 9067026209122200226}
   frontLeftCollider: {fileID: 8308483947660163386}
   frontRightCollider: {fileID: 5457258448343429478}
   rearLeftCollider: {fileID: 7783703220749698988}
@@ -1993,7 +2011,7 @@ MonoBehaviour:
   _componentIndexCache: 255
   _addedNetworkObject: {fileID: 2264628392054573976}
   _networkObjectCache: {fileID: 0}
-  defaultMaxHealth: 100
+  config: {fileID: 9067026209122200226}
   defaultVehicleColor: {r: 1, g: 1, b: 1, a: 1}
   defaultPlayerName: Player
 --- !u!114 &6276976410772586377
@@ -2013,9 +2031,7 @@ MonoBehaviour:
   _networkObjectCache: {fileID: 0}
   vehicleRigidbody: {fileID: 7352391912638044952}
   playerState: {fileID: 6297771369379103815}
-  minimumImpactSpeed: 4
-  damagePerSpeed: 6
-  pairCooldownSeconds: 0.5
+  config: {fileID: 9067026209122200226}
 --- !u!1 &6330414233132841805
 GameObject:
   m_ObjectHideFlags: 0

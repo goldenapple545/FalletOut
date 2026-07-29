@@ -1484,6 +1484,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2922547356944998858}
+  - component: {fileID: 4507278387562242460}
   - component: {fileID: 7352391912638044952}
   - component: {fileID: 3829708129182012639}
   - component: {fileID: 2264628392054573976}
@@ -1523,6 +1524,31 @@ Transform:
   - {fileID: 7420711198316932399}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &4507278387562242460
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5751675616803937464}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 839c8f9dcf0ff7749967f38d7d6cd6f0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: CodeBase::CodeBase.Gameplay.Car.VehicleStats
+  maxSpeed: 80
+  maxReverseSpeed: 30
+  accelerationMultiplier: 5
+  maxSteeringAngle: 30
+  steeringSpeed: 0.4
+  brakeForce: 1000
+  decelerationMultiplier: 5
+  handbrakeDriftMultiplier: 5
+  bodyMassCenter: {x: 0, y: -0.5, z: 0}
+  maxHealth: 150
+  minimumImpactSpeed: 4
+  damagePerSpeed: 10
+  pairCooldownSeconds: 0.5
 --- !u!54 &7352391912638044952
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -1562,15 +1588,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c0fefceefe666bb4682b272ec8c5bdd0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxSpeed: 65
-  maxReverseSpeed: 30
-  accelerationMultiplier: 13
-  maxSteeringAngle: 30
-  steeringSpeed: 0.8
-  brakeForce: 1000
-  decelerationMultiplier: 5
-  handbrakeDriftMultiplier: 1
-  bodyMassCenter: {x: 0, y: 0, z: 0}
+  stats: {fileID: 4507278387562242460}
   frontLeftCollider: {fileID: 8108097055067141259}
   frontRightCollider: {fileID: 4869671495376138700}
   rearLeftCollider: {fileID: 4515394810936667349}
@@ -1770,7 +1788,7 @@ MonoBehaviour:
   _componentIndexCache: 5
   _addedNetworkObject: {fileID: 2264628392054573976}
   _networkObjectCache: {fileID: 2264628392054573976}
-  defaultMaxHealth: 100
+  config: {fileID: 4507278387562242460}
   defaultVehicleColor: {r: 1, g: 1, b: 1, a: 1}
   defaultPlayerName: Player
 --- !u!114 &6276976410772586377
@@ -1790,9 +1808,7 @@ MonoBehaviour:
   _networkObjectCache: {fileID: 2264628392054573976}
   vehicleRigidbody: {fileID: 7352391912638044952}
   playerState: {fileID: 6297771369379103815}
-  minimumImpactSpeed: 4
-  damagePerSpeed: 6
-  pairCooldownSeconds: 0.5
+  config: {fileID: 4507278387562242460}
 --- !u!1 &6330414233132841805
 GameObject:
   m_ObjectHideFlags: 0
