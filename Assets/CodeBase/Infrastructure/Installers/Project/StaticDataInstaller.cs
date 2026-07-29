@@ -1,4 +1,5 @@
-﻿using CodeBase.Infrastructure.BootstrapSteps.StaticData;
+﻿using CodeBase.CodeBase.Infrastructure.Services.StaticData;
+using CodeBase.Infrastructure.BootstrapSteps.StaticData;
 using Zenject;
 
 namespace CodeBase.Infrastructure.Installers.Project

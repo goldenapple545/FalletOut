@@ -1,13 +1,12 @@
 ﻿using System.Threading;
+using CodeBase.CodeBase.Data;
 using CodeBase.Data;
 using Cysharp.Threading.Tasks;
 
-namespace CodeBase.Infrastructure.BootstrapSteps.StaticData
+namespace CodeBase.CodeBase.Infrastructure.Services.StaticData
 {
     public interface IStaticDataService
     {
-        VehicleConfig VehicleConfig { get; }
-        CollisionDamageConfig CollisionDamageConfig { get; }
         MatchRulesConfig MatchRulesConfig { get; }
         
         UniTask WarmupAsync(CancellationToken ct);

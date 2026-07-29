@@ -1,4 +1,5 @@
 ﻿using System.Threading;
+using CodeBase.CodeBase.Infrastructure.Services.StaticData;
 using Cysharp.Threading.Tasks;
 
 namespace CodeBase.Infrastructure.BootstrapSteps.StaticData

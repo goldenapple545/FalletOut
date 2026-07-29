@@ -1,25 +1,19 @@
 ﻿using System;
 using System.Threading;
+using CodeBase.CodeBase.Data;
 using CodeBase.Data;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
 
-namespace CodeBase.Infrastructure.BootstrapSteps.StaticData
+namespace CodeBase.CodeBase.Infrastructure.Services.StaticData
 {
     public sealed class StaticDataService : IStaticDataService
     {
-        private const string VehicleConfigPath = "StaticData/VehicleConfig";
-        private const string CollisionDamageConfigPath = "StaticData/CollisionDamageConfig";
         private const string MatchRulesConfigPath = "StaticData/MatchRulesConfig";
-
-        public VehicleConfig VehicleConfig { get; private set; }
-        public CollisionDamageConfig CollisionDamageConfig { get; private set; }
         public MatchRulesConfig MatchRulesConfig { get; private set; }
 
         public async UniTask WarmupAsync(CancellationToken ct)
         {
-            VehicleConfig = await LoadAsync<VehicleConfig>(VehicleConfigPath, ct);
-            CollisionDamageConfig = await LoadAsync<CollisionDamageConfig>(CollisionDamageConfigPath, ct);
             MatchRulesConfig = await LoadAsync<MatchRulesConfig>(MatchRulesConfigPath, ct);
         }
 
