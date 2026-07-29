@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d8730db727611b8448300eedbe92d704, type: 3}
   m_Name: MusicConfig
   m_EditorClassIdentifier: CodeBase::CodeBase.Infrastructure.Services.Music.MusicConfig
-  <LobbyTrack>k__BackingField: {fileID: 8300000, guid: fb4f382ef7bffe842be71370b2e9a97c, type: 3}
+  <LobbyTrack>k__BackingField: {fileID: 8300000, guid: fc4e96745c667324aaa1a495709fab89, type: 3}
   <BattleTracks>k__BackingField:
   - {fileID: 8300000, guid: fb4f382ef7bffe842be71370b2e9a97c, type: 3}
   - {fileID: 8300000, guid: fcee9cf1d348dd6409cf57bf835ea700, type: 3}

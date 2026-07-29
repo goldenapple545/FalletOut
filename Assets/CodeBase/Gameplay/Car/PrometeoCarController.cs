@@ -28,23 +28,23 @@ namespace CodeBase.Gameplay.Car
     [Space(20)]
     //[Header("CAR SETUP")]
     [Space(10)]
-    [Range(20, 190)]
+    [Range(20, 1000)]
     public int maxSpeed = 90; //The maximum speed that the car can reach in km/h.
-    [Range(10, 120)]
+    [Range(10, 400)]
     public int maxReverseSpeed = 45; //The maximum speed that the car can reach while going on reverse in km/h.
-    [Range(1, 10)]
+    [Range(1, 1500)]
     public int accelerationMultiplier = 2; // How fast the car can accelerate. 1 is a slow acceleration and 10 is the fastest.
     [Space(10)]
-    [Range(10, 45)]
+    [Range(10, 70)]
     public int maxSteeringAngle = 27; // The maximum angle that the tires can reach while rotating the steering wheel.
     [Range(0.1f, 1f)]
     public float steeringSpeed = 0.5f; // How fast the steering wheel turns.
     [Space(10)]
-    [Range(100, 600)]
+    [Range(100, 1000)]
     public int brakeForce = 350; // The strength of the wheel brakes.
-    [Range(1, 10)]
+    [Range(1, 50)]
     public int decelerationMultiplier = 2; // How fast the car decelerates when the user is not using the throttle.
-    [Range(1, 10)]
+    [Range(1, 50)]
     public int handbrakeDriftMultiplier = 5; // How much grip the car loses when the user hit the handbrake.
     [Space(10)]
     public Vector3 bodyMassCenter; // This is a vector that contains the center of mass of the car. I recommend to set this value
