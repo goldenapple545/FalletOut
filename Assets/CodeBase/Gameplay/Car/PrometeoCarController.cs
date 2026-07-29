@@ -32,8 +32,8 @@ namespace CodeBase.Gameplay.Car
     public int maxSpeed = 90; //The maximum speed that the car can reach in km/h.
     [Range(10, 400)]
     public int maxReverseSpeed = 45; //The maximum speed that the car can reach while going on reverse in km/h.
-    [Range(1, 1500)]
-    public int accelerationMultiplier = 2; // How fast the car can accelerate. 1 is a slow acceleration and 10 is the fastest.
+    [Range(1, 10000)]
+    public int accelerationMultiplier = 2000; // Motor torque applied to wheels. Higher = faster acceleration.
     [Space(10)]
     [Range(10, 70)]
     public int maxSteeringAngle = 27; // The maximum angle that the tires can reach while rotating the steering wheel.
@@ -44,6 +44,8 @@ namespace CodeBase.Gameplay.Car
     public int brakeForce = 350; // The strength of the wheel brakes.
     [Range(1, 50)]
     public int decelerationMultiplier = 2; // How fast the car decelerates when the user is not using the throttle.
+    [Range(1, 50)]
+    public int brakeMultiplier = 2;
     [Range(1, 50)]
     public int handbrakeDriftMultiplier = 5; // How much grip the car loses when the user hit the handbrake.
     [Space(10)]
@@ -308,8 +310,8 @@ namespace CodeBase.Gameplay.Car
 
         float throttleChangeSpeed =
             desiredThrottle == 0f
-                ? 10f
-                : 3f;
+                ? 15f
+                : 10f;
 
         throttleAxis = Mathf.MoveTowards(
             throttleAxis,
@@ -329,6 +331,7 @@ namespace CodeBase.Gameplay.Car
         {
             SetMotorTorque(0f);
             SetBrakeTorque(brakeForce);
+            ApplyCoasting(tickDelta);
             return;
         }
 
@@ -336,6 +339,7 @@ namespace CodeBase.Gameplay.Car
         {
             SetMotorTorque(0f);
             SetBrakeTorque(brakeForce);
+            ApplyCoasting(tickDelta);
             return;
         }
 
@@ -351,7 +355,7 @@ namespace CodeBase.Gameplay.Car
         SetBrakeTorque(0f);
 
         float motorTorque =
-            accelerationMultiplier * 50f * throttleAxis;
+            accelerationMultiplier * throttleAxis;
 
         SetMotorTorque(motorTorque);
     }
