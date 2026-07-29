@@ -2,14 +2,25 @@
 using System.IO;
 using System.Net;
 using System.Text;
-using UnityEngine;
+using CodeBase.CodeBase.Infrastructure.Services.StaticData;
+using Zenject;
 
 namespace CodeBase.Gameplay.Network
 {
     public class NameLanDiscoveryTransport : LanDiscoveryTransport
     {
-        [SerializeField] private int maxPlayers = 2;
-        public int MaxPlayers => maxPlayers;
+        private IStaticDataService _staticDataService;
+
+        [Inject]
+        private void Construct(IStaticDataService staticDataService)
+        {
+            _staticDataService = staticDataService;
+        }
+
+        private int MaxPlayers =>
+            _staticDataService != null
+                ? _staticDataService.MatchRulesConfig.MaxPlayers
+                : 6;
 
         public string AdvertisedName    { get; private set; } = "Сервер 1";
         public int    AdvertisedPlayers { get; private set; } = 1;
@@ -30,7 +41,7 @@ namespace CodeBase.Gameplay.Network
 
             bw.Write((byte)1);
             bw.Write(AdvertisedPlayers);
-            bw.Write(maxPlayers);
+            bw.Write(MaxPlayers);
 
             byte[] nameBytes = Encoding.UTF8.GetBytes(AdvertisedName);
             bw.Write(nameBytes.Length);

@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
+using CodeBase.CodeBase.Data;
+using CodeBase.CodeBase.Infrastructure.Services.StaticData;
 using FishNet.Object;
 using FishNet.Object.Synchronizing;
 using R3;
 using UnityEngine;
+using Zenject;
 
 namespace CodeBase.CodeBase.Gameplay.Network.Match
 {
@@ -18,8 +20,18 @@ namespace CodeBase.CodeBase.Gameplay.Network.Match
         private readonly List<PlayerMatchState> _players = new();
         private IMatchMode _mode;
 
+        private IStaticDataService _staticDataService;
+        private MatchRulesConfig _rules;
+
         private int _expectedPlayerCount;
         private bool _roundStarted;
+
+        [Inject]
+        private void Construct(IStaticDataService staticDataService)
+        {
+            _staticDataService = staticDataService;
+            _rules = staticDataService.MatchRulesConfig;
+        }
 
         public MatchPhase Phase => _phase.Value;
         public int WinnerObjectId => _winnerObjectId.Value;
@@ -82,6 +94,10 @@ namespace CodeBase.CodeBase.Gameplay.Network.Match
             if (player == null || _players.Contains(player))
                 return;
 
+            int maxPlayers = _rules != null ? _rules.MaxPlayers : 6;
+            if (_players.Count >= maxPlayers)
+                return;
+
             _players.Add(player);
 
             player.IsAlive
@@ -114,11 +130,24 @@ namespace CodeBase.CodeBase.Gameplay.Network.Match
         [Server]
         public void StartRoundServer()
         {
+            if (_roundStarted)
+                return;
+
             _roundStarted = true;
             _winnerObjectId.Value = -1;
 
             OnRoundStartingServer?.Invoke(_players);
-            
+
+            float countdownSeconds = _rules != null
+                ? _rules.MatchStartCountdownSeconds
+                : 3f;
+
+            Invoke(nameof(FinishRoundStartServer), countdownSeconds);
+        }
+
+        [Server]
+        private void FinishRoundStartServer()
+        {
             foreach (PlayerMatchState player in _players)
             {
                 player.ResetForMatchServer(
