@@ -1,13 +1,15 @@
 ﻿using System;
+using CodeBase.Gameplay.Network;
+using CodeBase.Gameplay.Network.Match;
 using CodeBase.Infrastructure.Services.Session;
 using FishNet.Managing;
 using FishNet.Managing.Scened;
 
-namespace CodeBase.Gameplay.Network.Match
+namespace CodeBase.CodeBase.Gameplay.Network.Match
 {
     public sealed class MatchSceneService : IMatchSceneService
     {
-        private const string ArenaSceneName = "Arena_01";
+        private const string ArenaSceneName = "Parking Zone";
 
         private readonly ISessionService _sessionService;
         private readonly NetworkManager _networkManager;

@@ -12,6 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3b6bef1d74334bf7aed260f3a97c5f57, type: 3}
   m_Name: MatchRulesConfig
   m_EditorClassIdentifier: Assembly-CSharp::CodeBase.Infrastructure.BootstrapSteps.StaticData.Configs.MatchRulesConfig
-  <MinPlayersToStart>k__BackingField: 2
-  <MaxPlayers>k__BackingField: 6
+  <MaxPlayers>k__BackingField: 4
   <MatchStartCountdownSeconds>k__BackingField: 3

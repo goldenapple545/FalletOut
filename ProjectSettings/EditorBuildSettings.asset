@@ -11,6 +11,15 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Arena_01.unity
     guid: 2fc18cdd460eae24b9e7197898144187
+  - enabled: 1
+    path: Assets/Scenes/Desert.unity
+    guid: aa93a35cba4b359429880eed24dcbc71
+  - enabled: 1
+    path: Assets/Scenes/Parking Zone.unity
+    guid: 66ddfd2478766554db1547bec99e2742
+  - enabled: 1
+    path: Assets/Scenes/Racing Track.unity
+    guid: 22706be70641cbb4c8ea91281d8840f7
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   m_UseUCBPForAssetBundles: 0
