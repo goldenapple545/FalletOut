@@ -39,9 +39,9 @@ namespace CodeBase.Gameplay.Network.UI
 
             int defaultIndex = levels.IndexOf(_staticDataService.LevelsRegistry.Levels[0]);
             if (defaultIndex < 0) defaultIndex = 0;
-
-            //levelDropdown.value = defaultIndex;
+            
             levelDropdown.SetValueWithoutNotify(defaultIndex);
+            levelDropdown.RefreshShownValue();
             levelDropdown.onValueChanged.AddListener(OnLevelSelected);
 
             UpdatePreview(_staticDataService.LevelsRegistry.Levels[0]);
