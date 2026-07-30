@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using CodeBase.CodeBase.Infrastructure.Services.StaticData;
+using CodeBase.Data;
 using CodeBase.Gameplay.Network;
 using CodeBase.Gameplay.Spawn;
 using FishNet.Connection;
@@ -18,19 +20,25 @@ namespace CodeBase.CodeBase.Gameplay.Network.Match.Spawn
         private readonly Dictionary<int, NetworkObject> _vehiclesByClientId =
             new();
 
+        private readonly Dictionary<int, VehicleConfig> _clientVehicles =
+            new();
+
         private DiContainer _sceneContainer;
         private MatchManager _matchManager;
         private LobbySessionService _lobbyService;
+        private IStaticDataService _staticDataService;
 
         [Inject]
         private void Construct(
             DiContainer sceneContainer,
             MatchManager matchManager,
-            LobbySessionService lobbyService)
+            LobbySessionService lobbyService,
+            IStaticDataService staticDataService)
         {
             _sceneContainer = sceneContainer;
             _matchManager = matchManager;
             _lobbyService = lobbyService;
+            _staticDataService = staticDataService;
         }
 
         public override void OnStartServer()
@@ -61,6 +69,20 @@ namespace CodeBase.CodeBase.Gameplay.Network.Match.Spawn
             }
         }
 
+        public override void OnStartClient()
+        {
+            base.OnStartClient();
+
+            // Клиент сообщает серверу свою выбранную машинку
+            VehicleConfig selected = _lobbyService?.SelectedVehicle;
+
+            if (selected != null && !string.IsNullOrEmpty(selected.Id))
+            {
+                int clientId = NetworkManager.ClientManager.Connection.ClientId;
+                ReportVehicleClientRpc(clientId, selected.Id);
+            }
+        }
+
         public override void OnStopServer()
         {
             NetworkManager.SceneManager.OnClientPresenceChangeEnd -=
@@ -70,8 +92,67 @@ namespace CodeBase.CodeBase.Gameplay.Network.Match.Spawn
                 RepositionPlayersToSpawnPointsServer;
 
             _vehiclesByClientId.Clear();
+            _clientVehicles.Clear();
 
             base.OnStopServer();
+        }
+
+        /// <summary>
+        /// Клиент вызывает этот RPC при загрузке match сцены,
+        /// сообщая серверу свою выбранную машинку.
+        /// </summary>
+        [ServerRpc(RequireOwnership = false)]
+        public void ReportVehicleClientRpc(int clientId, string vehicleId)
+        {
+            if (!IsServerStarted || string.IsNullOrEmpty(vehicleId))
+                return;
+
+            VehicleConfig config = ResolveVehicleById(vehicleId);
+
+            if (config != null)
+            {
+                _clientVehicles[clientId] = config;
+
+                Debug.Log(
+                    $"[{nameof(MatchVehicleSpawner)}] " +
+                    $"Client {clientId} reported vehicle: {vehicleId}",
+                    this);
+
+                // Если клиент уже в сцене но ещё не заспавнен — спавним сейчас
+                foreach (NetworkConnection connection in ServerManager.Clients.Values)
+                {
+                    if (connection.ClientId == clientId &&
+                        connection.IsActive &&
+                        !_vehiclesByClientId.ContainsKey(clientId))
+                    {
+                        SpawnVehicleFor(connection);
+                        break;
+                    }
+                }
+            }
+        }
+
+        private VehicleConfig ResolveVehicleById(string vehicleId)
+        {
+            if (_staticDataService?.VehiclesRegistry == null)
+                return null;
+
+            foreach (var v in _staticDataService.VehiclesRegistry.Vehicles)
+            {
+                if (v.Id == vehicleId)
+                    return v;
+            }
+
+            return null;
+        }
+
+        private VehicleConfig GetVehicleForClient(int clientId)
+        {
+            if (_clientVehicles.TryGetValue(clientId, out VehicleConfig config))
+                return config;
+
+            // Fallback: выбор хоста (для хоста самого)
+            return _lobbyService?.SelectedVehicle;
         }
 
         private void HandleClientPresenceChanged(
@@ -82,6 +163,18 @@ namespace CodeBase.CodeBase.Gameplay.Network.Match.Spawn
 
             if (args.Scene != gameObject.scene)
                 return;
+
+            // Хост (server connection, clientId == 0) спавнится сразу — fallback на SelectedVehicle.
+            // Для клиентов ждём ReportVehicleClientRpc.
+            int clientId = args.Connection.ClientId;
+            bool isHostConnection = clientId == 0;
+
+            if (!isHostConnection && !_clientVehicles.ContainsKey(clientId))
+            {
+                // Выбор ещё не получен — спавн произойдёт в ReportVehicleClientRpc
+                // когда клиент сообщит свою машинку.
+                return;
+            }
 
             SpawnVehicleFor(args.Connection);
         }
@@ -94,15 +187,17 @@ namespace CodeBase.CodeBase.Gameplay.Network.Match.Spawn
             if (_vehiclesByClientId.ContainsKey(connection.ClientId))
                 return;
 
-            if (_lobbyService?.SelectedVehicle == null ||
-                _lobbyService.SelectedVehicle.Prefab == null ||
+            VehicleConfig vehicleConfig = GetVehicleForClient(connection.ClientId);
+
+            if (vehicleConfig == null ||
+                vehicleConfig.Prefab == null ||
                 spawnRegistry == null ||
                 spawnRegistry.Count == 0 || colorRegistry == null ||
                 colorRegistry.Count == 0 || _sceneContainer == null)
             {
                 Debug.LogError(
                     $"[{nameof(MatchVehicleSpawner)}] " +
-                    $"Missing configuration for vehicle spawn. { _lobbyService?.SelectedVehicle } { _lobbyService?.SelectedVehicle?.Prefab }",
+                    $"Missing configuration for vehicle spawn. Client={connection.ClientId}",
                     this);
 
                 return;
@@ -113,7 +208,7 @@ namespace CodeBase.CodeBase.Gameplay.Network.Match.Spawn
             VehicleColorEntry colorEntry = colorRegistry.GetEntry(spawnIndex);
 
             NetworkObject vehicle = Instantiate(
-                _lobbyService.SelectedVehicle.Prefab,
+                vehicleConfig.Prefab,
                 spawnPoint.position,
                 spawnPoint.rotation);
             
