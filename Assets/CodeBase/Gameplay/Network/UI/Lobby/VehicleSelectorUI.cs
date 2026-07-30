@@ -15,10 +15,10 @@ namespace CodeBase.Gameplay.Network.UI
         [SerializeField] private TMP_Dropdown vehicleDropdown;
         [SerializeField] private Image vehiclePreviewImage;
         [SerializeField] private TMP_Text vehicleNameText;
-        [SerializeField] private TMP_Text speedText;
-        [SerializeField] private TMP_Text driftText;
-        [SerializeField] private TMP_Text durabilityText;
-        [SerializeField] private TMP_Text damageText;
+        [SerializeField] private StatBar speedBar;
+        [SerializeField] private StatBar driftBar;
+        [SerializeField] private StatBar durabilityBar;
+        [SerializeField] private StatBar damageBar;
 
         private LobbySessionService _lobbyService;
         private IStaticDataService _staticDataService;
@@ -81,17 +81,17 @@ namespace CodeBase.Gameplay.Network.UI
             if (vehicleNameText != null)
                 vehicleNameText.text = vehicle.DisplayName;
 
-            if (speedText != null)
-                speedText.text = $"Speed: {vehicle.Speed:0}";
+            if (speedBar != null)
+                speedBar.SetValue(vehicle.Speed);
 
-            if (driftText != null)
-                driftText.text = $"Drift: {vehicle.Drift:0}";
+            if (driftBar != null)
+                driftBar.SetValue(vehicle.Drift);
 
-            if (durabilityText != null)
-                durabilityText.text = $"Durability: {vehicle.Durability:0}";
+            if (durabilityBar != null)
+                durabilityBar.SetValue(vehicle.Durability);
 
-            if (damageText != null)
-                damageText.text = $"Damage: {vehicle.Damage:0}";
+            if (damageBar != null)
+                damageBar.SetValue(vehicle.Damage);
         }
     }
 }
