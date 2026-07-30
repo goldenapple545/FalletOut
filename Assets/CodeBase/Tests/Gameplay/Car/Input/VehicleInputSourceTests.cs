@@ -46,6 +46,7 @@ namespace CodeBase.Tests.Gameplay.Car.Input
             Assert.That(input.Throttle, Is.EqualTo(0f).Within(0.0001f));
             Assert.That(input.Steering, Is.EqualTo(0f).Within(0.0001f));
             Assert.That(input.Handbrake, Is.EqualTo(false));
+            Assert.That(input.Boost, Is.EqualTo(false));
         }
 
         [Test]
@@ -69,6 +70,7 @@ namespace CodeBase.Tests.Gameplay.Car.Input
             _source.SetTouchThrottle(0.8f);
             _source.SetTouchSteering(-0.5f);
             _source.SetTouchHandbrake(true);
+            _source.SetTouchBoost(true);
 
             VehicleInput input = _source.Read();
 
@@ -78,6 +80,8 @@ namespace CodeBase.Tests.Gameplay.Car.Input
                 "Android mode should return touch steering");
             Assert.That(input.Handbrake, Is.EqualTo(true),
                 "Android mode should return touch handbrake");
+            Assert.That(input.Boost, Is.EqualTo(true),
+                "Android mode should return touch boost");
         }
 
         [Test]
@@ -106,6 +110,7 @@ namespace CodeBase.Tests.Gameplay.Car.Input
             _source.SetTouchThrottle(1f);
             _source.SetTouchSteering(1f);
             _source.SetTouchHandbrake(true);
+            _source.SetTouchBoost(true);
 
             _source.ResetTouch();
             VehicleInput input = _source.Read();
@@ -113,6 +118,7 @@ namespace CodeBase.Tests.Gameplay.Car.Input
             Assert.That(input.Throttle, Is.EqualTo(0f).Within(0.0001f));
             Assert.That(input.Steering, Is.EqualTo(0f).Within(0.0001f));
             Assert.That(input.Handbrake, Is.EqualTo(false));
+            Assert.That(input.Boost, Is.EqualTo(false));
         }
 
         [Test]

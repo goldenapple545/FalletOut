@@ -14,17 +14,20 @@ namespace CodeBase.Tests.Gameplay.Car.Input.Prediction
             float throttle = 0.75f;
             float steering = -0.5f;
             bool handbrake = true;
+            bool boost = false;
 
             // Act
             VehicleReplicateData data = new VehicleReplicateData(
                 throttle,
                 steering,
-                handbrake);
+                handbrake,
+                boost);
 
             // Assert
             Assert.That(data.Throttle, Is.EqualTo(throttle).Within(0.0001f));
             Assert.That(data.Steering, Is.EqualTo(steering).Within(0.0001f));
             Assert.That(data.Handbrake, Is.EqualTo(handbrake));
+            Assert.That(data.Boost, Is.EqualTo(boost));
         }
 
         [Test]
@@ -55,7 +58,7 @@ namespace CodeBase.Tests.Gameplay.Car.Input.Prediction
         public void Dispose_DoesNotThrow()
         {
             // Arrange
-            VehicleReplicateData data = new VehicleReplicateData(1f, 0f, false);
+            VehicleReplicateData data = new VehicleReplicateData(1f, 0f, false, false);
 
             // Act & Assert - should not throw
             Assert.DoesNotThrow(() => data.Dispose());
@@ -65,9 +68,9 @@ namespace CodeBase.Tests.Gameplay.Car.Input.Prediction
         public void Throttle_StoresAnyValue()
         {
             // Arrange & Act
-            VehicleReplicateData dataMax = new VehicleReplicateData(2f, 0f, false);
-            VehicleReplicateData dataMin = new VehicleReplicateData(-2f, 0f, false);
-            VehicleReplicateData dataNormal = new VehicleReplicateData(0.5f, 0f, false);
+            VehicleReplicateData dataMax = new VehicleReplicateData(2f, 0f, false, false);
+            VehicleReplicateData dataMin = new VehicleReplicateData(-2f, 0f, false, false);
+            VehicleReplicateData dataNormal = new VehicleReplicateData(0.5f, 0f, false, false);
 
             // Assert - data stores values as-is, clamping is done by input source
             Assert.That(dataMax.Throttle, Is.EqualTo(2f));
@@ -79,9 +82,9 @@ namespace CodeBase.Tests.Gameplay.Car.Input.Prediction
         public void Steering_AllowsFullRange()
         {
             // Arrange & Act
-            VehicleReplicateData dataLeft = new VehicleReplicateData(0f, -1f, false);
-            VehicleReplicateData dataRight = new VehicleReplicateData(0f, 1f, false);
-            VehicleReplicateData dataCenter = new VehicleReplicateData(0f, 0f, false);
+            VehicleReplicateData dataLeft = new VehicleReplicateData(0f, -1f, false, false);
+            VehicleReplicateData dataRight = new VehicleReplicateData(0f, 1f, false, false);
+            VehicleReplicateData dataCenter = new VehicleReplicateData(0f, 0f, false, false);
 
             // Assert
             Assert.That(dataLeft.Steering, Is.EqualTo(-1f));

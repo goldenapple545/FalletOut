@@ -11,7 +11,8 @@ namespace CodeBase.Gameplay.Car.Input
         {
             Throttle,
             Steering,
-            Handbrake
+            Handbrake,
+            Boost
         }
 
         [Header("Binding")]
@@ -91,6 +92,10 @@ namespace CodeBase.Gameplay.Car.Input
 
                 case Control.Handbrake:
                     _inputSource.SetTouchHandbrake(pressed);
+                    break;
+                
+                case Control.Boost:
+                    _inputSource.SetTouchBoost(pressed);
                     break;
             }
         }

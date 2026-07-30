@@ -1768,6 +1768,8 @@ MonoBehaviour:
   brakeForce: 1000
   decelerationMultiplier: 2
   handbrakeDriftMultiplier: 1
+  boostForce: 4800
+  boostCooldown: 2
   bodyMassCenter: {x: 0, y: -0.5, z: 0}
   maxHealth: 40
   minimumImpactSpeed: 4
@@ -1887,7 +1889,7 @@ MonoBehaviour:
   _initializeOrder: 0
   _preventDespawnOnDisconnect: 0
   _defaultDespawnType: 0
-  _initializedTimestamp: -8584162150710988366
+  _initializedTimestamp: -8584161944428795164
 --- !u!114 &3112220271104262623
 MonoBehaviour:
   m_ObjectHideFlags: 0

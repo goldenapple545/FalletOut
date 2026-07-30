@@ -10,7 +10,8 @@ namespace CodeBase.Gameplay.Car.Input
         private float _touchThrottle;
         private float _touchSteering;
         private bool _touchHandbrake;
-        
+        private bool _touchBoost;
+
         private BuildConfig _buildConfig;
 
         [Inject]
@@ -18,7 +19,7 @@ namespace CodeBase.Gameplay.Car.Input
         {
             _buildConfig = buildConfig;
         }
-        
+
         public VehicleInput Read()
         {
             if (_buildConfig.IsAndroid)
@@ -26,7 +27,8 @@ namespace CodeBase.Gameplay.Car.Input
                 return new VehicleInput(
                     _touchThrottle,
                     _touchSteering,
-                    _touchHandbrake);
+                    _touchHandbrake,
+                    _touchBoost);
             }
 
             return ReadKeyboard();
@@ -40,14 +42,18 @@ namespace CodeBase.Gameplay.Car.Input
 
         public void SetTouchHandbrake(bool value) =>
             _touchHandbrake = value;
-        
+
+        public void SetTouchBoost(bool value) =>
+            _touchBoost = value;
+
         public void ResetTouch()
         {
             _touchThrottle = 0f;
             _touchSteering = 0f;
             _touchHandbrake = false;
+            _touchBoost = false;
         }
-        
+
         private VehicleInput ReadKeyboard()
         {
             if (Keyboard.current == null)
@@ -62,8 +68,9 @@ namespace CodeBase.Gameplay.Car.Input
                 (Keyboard.current.aKey.isPressed ? 1f : 0f);
 
             bool handbrake = Keyboard.current.spaceKey.isPressed;
+            bool boost = Keyboard.current.eKey.isPressed;
 
-            return new VehicleInput(throttle, steering, handbrake);
+            return new VehicleInput(throttle, steering, handbrake, boost);
         }
     }
 }

@@ -99,6 +99,7 @@ namespace CodeBase.Gameplay.Car
     float RRWextremumSlip;
     
     private bool _canReactOnInput;
+    private float _nextBoostTime;
 
     // Start is called before the first frame update
     void Start()
@@ -215,10 +216,7 @@ namespace CodeBase.Gameplay.Car
         UpdateSteering(input.Steering, tickDelta);
         UpdateDrive(input.Throttle, tickDelta);
         UpdateHandbrake(input.Handbrake, tickDelta);
-
-        // PredictionRigidbody здесь пока не вызывает AddForce/AddTorque:
-        // движение создаёт WheelCollider через motorTorque/brakeTorque.
-        // Но parameter остаётся, чтобы путь симуляции был единым.
+        UpdateBoost(input.Boost, tickDelta);
     }
 
     public void ApplyPredictionState(VehicleReconcileData data)
@@ -362,6 +360,17 @@ namespace CodeBase.Gameplay.Car
 
         UpdateDriftFlag();
         ApplyDriftFriction();
+    }
+    
+    private void UpdateBoost(bool InputBoost, float TickDelta)
+    {
+        if (!_canReactOnInput) return;
+        
+        if (InputBoost && Time.time >= _nextBoostTime)
+        {
+            carRigidbody.AddForce(Vector3.up * stats.boostForce, ForceMode.Impulse);
+            _nextBoostTime = Time.time + stats.boostCooldown;
+        }
     }
 
     private void ApplyDriftFriction()

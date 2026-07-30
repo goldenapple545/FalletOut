@@ -29,6 +29,10 @@ namespace CodeBase.Gameplay.Car
         [Header("Drift")]
         [Range(1, 50)]
         public int handbrakeDriftMultiplier = 5;
+        
+        [Header("Boost")]
+        public float boostForce = 500f;
+        public float boostCooldown = 2f;
 
         [Header("Physics")]
         public Vector3 bodyMassCenter = new Vector3(0f, -0.5f, 0f);

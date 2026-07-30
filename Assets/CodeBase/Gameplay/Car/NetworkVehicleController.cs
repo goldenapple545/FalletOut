@@ -1,12 +1,12 @@
-﻿using CodeBase.Gameplay.Car.Input;
+﻿using CodeBase.Gameplay.Car;
+using CodeBase.Gameplay.Car.Input;
 using CodeBase.Gameplay.Car.Input.Prediction;
-using FishNet.Component.Prediction;
 using FishNet.Object;
 using FishNet.Object.Prediction;
 using FishNet.Transporting;
 using UnityEngine;
 
-namespace CodeBase.Gameplay.Car
+namespace CodeBase.CodeBase.Gameplay.Car
 {
     public sealed class NetworkVehicleController : NetworkBehaviour
     {
@@ -62,7 +62,8 @@ namespace CodeBase.Gameplay.Car
                 data = new VehicleReplicateData(
                     input.Throttle,
                     input.Steering,
-                    input.Handbrake);
+                    input.Handbrake,
+                    input.Boost);
             }
 
             RunInputs(data);
@@ -101,7 +102,8 @@ namespace CodeBase.Gameplay.Car
                 new VehicleInput(
                     data.Throttle,
                     data.Steering,
-                    data.Handbrake),
+                    data.Handbrake,
+                    data.Boost),
                 _predictionRigidbody,
                 (float)TimeManager.TickDelta,
                 state);

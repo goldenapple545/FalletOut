@@ -1697,6 +1697,8 @@ MonoBehaviour:
   brakeForce: 600
   decelerationMultiplier: 1
   handbrakeDriftMultiplier: 50
+  boostForce: 6000
+  boostCooldown: 2
   bodyMassCenter: {x: 0, y: -0.5, z: 0}
   maxHealth: 60
   minimumImpactSpeed: 4
