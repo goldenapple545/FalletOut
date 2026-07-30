@@ -11,20 +11,23 @@ namespace CodeBase.CodeBase.Gameplay.Network.UI.Match
     {
         [SerializeField] private GameObject resultsRoot;
         [SerializeField] private TMP_Text winnerText;
+        [SerializeField] private TMP_Text historyText;
         [SerializeField] private Button restartButton;
 
-        private ISessionService _sessionService;
         private MatchManager _matchManager;
+        private ISessionService _sessionService;
 
         [Inject]
-        private void Construct(MatchManager matchManager, ISessionService sessionService)
+        private void Construct(
+            MatchManager matchManager,
+            ISessionService sessionService)
         {
             _matchManager = matchManager;
             _sessionService = sessionService;
-            
+
             Init();
         }
-        
+
         public void Init()
         {
             _matchManager.OnPhaseChanged += HandlePhaseChanged;
@@ -43,13 +46,25 @@ namespace CodeBase.CodeBase.Gameplay.Network.UI.Match
         {
             bool isRoundEnded = phase == MatchPhase.RoundEnded;
 
-            resultsRoot.SetActive(isRoundEnded);
-
             if (isRoundEnded)
-            {
-                winnerText.text =
-                    $"Winner: {_matchManager.WinnerName}";
-            }
+                Show();
+            else
+                Hide();
+        }
+
+        private void Show()
+        {
+            winnerText.text =
+                $"Winner: {_matchManager.WinnerName}";
+
+            historyText.text = _matchManager.DamageHistoryText;
+
+            resultsRoot.SetActive(true);
+        }
+
+        private void Hide()
+        {
+            resultsRoot.SetActive(false);
         }
     }
 }

@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using CodeBase.CodeBase.Data;
+using CodeBase.CodeBase.Gameplay.Network.Statistics;
 using CodeBase.CodeBase.Infrastructure.Services.StaticData;
 using FishNet.Object;
 using FishNet.Object.Synchronizing;
@@ -15,29 +18,39 @@ namespace CodeBase.CodeBase.Gameplay.Network.Match
         private readonly SyncVar<MatchPhase> _phase = new();
         private readonly SyncVar<int> _winnerObjectId = new(-1);
         private readonly SyncVar<string> _winnerName = new(string.Empty);
+        private readonly SyncVar<string> _damageHistoryText = new(string.Empty);
 
 
         private readonly List<PlayerMatchState> _players = new();
         private IMatchMode _mode;
 
         private IStaticDataService _staticDataService;
+        private IPlayerNameResolver _nameResolver;
+        private IVehicleDamageHistory _damageHistory;
         private MatchRulesConfig _rules;
 
         private int _expectedPlayerCount;
         private bool _roundStarted;
 
         [Inject]
-        private void Construct(IStaticDataService staticDataService)
+        private void Construct(
+            IStaticDataService staticDataService,
+            IPlayerNameResolver nameResolver,
+            IVehicleDamageHistory damageHistory)
         {
             _staticDataService = staticDataService;
+            _nameResolver = nameResolver;
+            _damageHistory = damageHistory;
             _rules = staticDataService.MatchRulesConfig;
         }
 
         public MatchPhase Phase => _phase.Value;
         public int WinnerObjectId => _winnerObjectId.Value;
         public string WinnerName => _winnerName.Value;
+        public string DamageHistoryText => _damageHistoryText.Value;
 
         public event Action<MatchPhase> OnPhaseChanged;
+        public event Action OnDamageHistoryReady;
         
         public event Action<IReadOnlyList<PlayerMatchState>>
             OnRoundStartingServer;
@@ -53,6 +66,8 @@ namespace CodeBase.CodeBase.Gameplay.Network.Match
 
             _phase.Value = MatchPhase.WaitingForPlayers;
             _winnerObjectId.Value = -1;
+            _winnerName.Value = string.Empty;
+            _damageHistoryText.Value = string.Empty;
             _roundStarted = false;
             _players.Clear();
         }
@@ -62,11 +77,13 @@ namespace CodeBase.CodeBase.Gameplay.Network.Match
             base.OnStartNetwork();
 
             _phase.OnChange += HandlePhaseChanged;
+            _damageHistoryText.OnChange += HandleDamageHistoryTextChanged;
         }
 
         public override void OnStopNetwork()
         {
             _phase.OnChange -= HandlePhaseChanged;
+            _damageHistoryText.OnChange -= HandleDamageHistoryTextChanged;
 
             base.OnStopNetwork();
         }
@@ -77,6 +94,14 @@ namespace CodeBase.CodeBase.Gameplay.Network.Match
             bool asServer)
         {
             OnPhaseChanged?.Invoke(next);
+        }
+
+        private void HandleDamageHistoryTextChanged(
+            string previous,
+            string next,
+            bool asServer)
+        {
+            OnDamageHistoryReady?.Invoke();
         }
 
         /// <summary>
@@ -100,6 +125,8 @@ namespace CodeBase.CodeBase.Gameplay.Network.Match
 
             _players.Add(player);
 
+            _nameResolver.Register(player.NetworkObject.ObjectId, player.PlayerName.CurrentValue);
+
             player.IsAlive
                 .Subscribe(isAlive =>
                     HandlePlayerAliveChangedServer(player, isAlive));
@@ -111,6 +138,7 @@ namespace CodeBase.CodeBase.Gameplay.Network.Match
         public void UnregisterPlayerServer(PlayerMatchState player)
         {
             _players.Remove(player);
+            _nameResolver.Unregister(player.NetworkObject.ObjectId);
         }
 
         private void TryAutoStartRoundServer()
@@ -189,10 +217,46 @@ namespace CodeBase.CodeBase.Gameplay.Network.Match
 
             _winnerName.Value =
                 winner != null ? winner.PlayerName.CurrentValue : "Draw";
-            
+
+            _damageHistoryText.Value = BuildDamageHistoryText();
+
             _phase.Value = MatchPhase.RoundEnded;
 
             _roundStarted = false;
+        }
+
+        [Server]
+        private string BuildDamageHistoryText()
+        {
+            if (_damageHistory == null || _damageHistory.Events.Count == 0)
+                return "No damage dealt";
+
+            const int maxEntries = 5;
+
+            var recentEvents = _damageHistory.Events
+                .OrderByDescending(e => e.ServerTime)
+                .Take(maxEntries)
+                .Reverse();
+
+            var sb = new StringBuilder();
+            bool first = true;
+
+            foreach (var ev in recentEvents)
+            {
+                if (!first)
+                    sb.AppendLine();
+                first = false;
+
+                string attackerName = _nameResolver.TryGetName(ev.AttackerObjectId, out var an) ? an : $"#{ev.AttackerObjectId}";
+                string victimName = _nameResolver.TryGetName(ev.VictimObjectId, out var vn) ? vn : $"#{ev.VictimObjectId}";
+
+                sb.Append($"{attackerName} → {victimName}: {ev.Damage} dmg");
+
+                if (ev.IsCritical)
+                    sb.Append(" (CRIT)");
+            }
+
+            return sb.ToString();
         }
 
         /// <summary>

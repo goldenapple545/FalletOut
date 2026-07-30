@@ -21,6 +21,10 @@ namespace CodeBase.CodeBase.Infrastructure.Installers.Scene
                 .WithArguments(damageHistoryCapacity)
                 .NonLazy();
 
+            Container.BindInterfacesAndSelfTo<PlayerNameResolver>()
+                .AsSingle()
+                .NonLazy();
+
             Container.Bind<MatchManager>().FromInstance(matchManager).AsSingle();
 
             Container.Bind<MatchHud>()
