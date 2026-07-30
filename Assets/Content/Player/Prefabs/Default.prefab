@@ -1790,7 +1790,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: CodeBase::CodeBase.Gameplay.Car.VehicleStats
   maxSpeed: 120
   maxReverseSpeed: 40
-  accelerationMultiplier: 100
+  accelerationMultiplier: 2000
   maxSteeringAngle: 45
   steeringSpeed: 0.6
   brakeForce: 500
@@ -1854,7 +1854,7 @@ MonoBehaviour:
   _spectatorInterpolation: 2
   _enableTeleport: 0
   _teleportThreshold: 1
-  <PrefabId>k__BackingField: 1
+  <PrefabId>k__BackingField: 3
   <SpawnableCollectionId>k__BackingField: 0
   <AssetPathHash>k__BackingField: 2820174632925574323
   SceneId: 0
@@ -1875,7 +1875,9 @@ MonoBehaviour:
   - {fileID: 8311038130929660762}
   - {fileID: 3512228132868254735}
   - {fileID: 1051763553810880842}
-  - {fileID: 0}
+  - {fileID: 6297771369379103815}
+  - {fileID: 6276976410772586377}
+  - {fileID: 2591907101044551451}
   InitializedParentNetworkBehaviour: {fileID: 0}
   InitializedNestedNetworkObjects: []
   RuntimeParentNetworkBehaviour: {fileID: 0}
@@ -1886,7 +1888,7 @@ MonoBehaviour:
   _initializeOrder: 0
   _preventDespawnOnDisconnect: 0
   _defaultDespawnType: 0
-  _initializedTimestamp: -8584165588782160460
+  _initializedTimestamp: -8584162091669198867
 --- !u!114 &3112220271104262623
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2008,9 +2010,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4c45c40fb7fe448da73901088e74836c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: CodeBase::CodeBase.CodeBase.Gameplay.Network.Match.PlayerMatchState
-  _componentIndexCache: 255
+  _componentIndexCache: 5
   _addedNetworkObject: {fileID: 2264628392054573976}
-  _networkObjectCache: {fileID: 0}
+  _networkObjectCache: {fileID: 2264628392054573976}
   config: {fileID: 9067026209122200226}
   defaultVehicleColor: {r: 1, g: 1, b: 1, a: 1}
   defaultPlayerName: Player
@@ -2026,9 +2028,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ee9596f1ce234d9a9baf142d72a83ee0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: CodeBase::CodeBase.CodeBase.Gameplay.Car.Damage.VehicleDamageReceiver
-  _componentIndexCache: 255
+  _componentIndexCache: 6
   _addedNetworkObject: {fileID: 2264628392054573976}
-  _networkObjectCache: {fileID: 0}
+  _networkObjectCache: {fileID: 2264628392054573976}
   vehicleRigidbody: {fileID: 7352391912638044952}
   playerState: {fileID: 6297771369379103815}
   config: {fileID: 9067026209122200226}
@@ -2784,7 +2786,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9db073337ca848e5ac851be1cb6553a4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CodeBase.Gameplay.Car.Presentation.VehicleWheelVisuals
-  _componentIndexCache: 5
+  _componentIndexCache: 7
   _addedNetworkObject: {fileID: 2264628392054573976}
   _networkObjectCache: {fileID: 2264628392054573976}
   networkVisualState: {fileID: 8311038130929660762}

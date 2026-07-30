@@ -9,6 +9,7 @@ namespace CodeBase.CodeBase.Infrastructure.Services.StaticData
     {
         MatchRulesConfig MatchRulesConfig { get; }
         LevelsRegistry LevelsRegistry { get; }
+        VehiclesRegistry VehiclesRegistry { get; }
 
         UniTask WarmupAsync(CancellationToken ct);
     }

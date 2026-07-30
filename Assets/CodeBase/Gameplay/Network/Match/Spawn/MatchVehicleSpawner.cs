@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using CodeBase.Gameplay.Network;
 using CodeBase.Gameplay.Spawn;
 using FishNet.Connection;
 using FishNet.Managing.Scened;
@@ -11,7 +12,6 @@ namespace CodeBase.CodeBase.Gameplay.Network.Match.Spawn
     public sealed class MatchVehicleSpawner : NetworkBehaviour
     {
         [Header("References")]
-        [SerializeField] private NetworkObject vehiclePrefab;
         [SerializeField] private ArenaSpawnRegistry spawnRegistry;
         [SerializeField] private VehicleColorRegistry colorRegistry;
 
@@ -20,12 +20,17 @@ namespace CodeBase.CodeBase.Gameplay.Network.Match.Spawn
 
         private DiContainer _sceneContainer;
         private MatchManager _matchManager;
+        private LobbySessionService _lobbyService;
 
         [Inject]
-        private void Construct(DiContainer sceneContainer, MatchManager matchManager)
+        private void Construct(
+            DiContainer sceneContainer,
+            MatchManager matchManager,
+            LobbySessionService lobbyService)
         {
             _sceneContainer = sceneContainer;
             _matchManager = matchManager;
+            _lobbyService = lobbyService;
         }
 
         public override void OnStartServer()
@@ -89,13 +94,15 @@ namespace CodeBase.CodeBase.Gameplay.Network.Match.Spawn
             if (_vehiclesByClientId.ContainsKey(connection.ClientId))
                 return;
 
-            if (vehiclePrefab == null || spawnRegistry == null ||
+            if (_lobbyService?.SelectedVehicle == null ||
+                _lobbyService.SelectedVehicle.Prefab == null ||
+                spawnRegistry == null ||
                 spawnRegistry.Count == 0 || colorRegistry == null ||
                 colorRegistry.Count == 0 || _sceneContainer == null)
             {
                 Debug.LogError(
                     $"[{nameof(MatchVehicleSpawner)}] " +
-                    "Missing configuration for vehicle spawn.",
+                    $"Missing configuration for vehicle spawn. { _lobbyService?.SelectedVehicle } { _lobbyService?.SelectedVehicle?.Prefab }",
                     this);
 
                 return;
@@ -106,7 +113,7 @@ namespace CodeBase.CodeBase.Gameplay.Network.Match.Spawn
             VehicleColorEntry colorEntry = colorRegistry.GetEntry(spawnIndex);
 
             NetworkObject vehicle = Instantiate(
-                vehiclePrefab,
+                _lobbyService.SelectedVehicle.Prefab,
                 spawnPoint.position,
                 spawnPoint.rotation);
             

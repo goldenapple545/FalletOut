@@ -43,6 +43,7 @@ namespace CodeBase.Gameplay.Network
         private bool _disposed;
 
         public LevelConfig SelectedLevel { get; set; }
+        public VehicleConfig SelectedVehicle { get; set; }
 
         public LobbyMode Mode { get; private set; } = LobbyMode.Offline;
         public bool IsTransitioning => _transitioning;
@@ -57,6 +58,7 @@ namespace CodeBase.Gameplay.Network
         public event Action<bool> TransitionStateChanged;
         public event Action<string> ServerNameChanged;
         public event Action<LevelConfig> SelectedLevelChanged;
+        public event Action<VehicleConfig> SelectedVehicleChanged;
 
         public LobbySessionService(
             ISessionService sessionService,
@@ -76,6 +78,12 @@ namespace CodeBase.Gameplay.Network
                 _staticDataService.LevelsRegistry.Levels.Count > 0)
             {
                 SelectedLevel = _staticDataService.LevelsRegistry.Levels[0];
+            }
+
+            if (_staticDataService.VehiclesRegistry != null &&
+                _staticDataService.VehiclesRegistry.Vehicles.Count > 0)
+            {
+                SelectedVehicle = _staticDataService.VehiclesRegistry.Vehicles[0];
             }
 
             _sessionService.ClientConnectionStateChanged += OnClientConnectionState;
@@ -111,11 +119,23 @@ namespace CodeBase.Gameplay.Network
 
         public void SetSelectedLevel(LevelConfig level)
         {
-            if (level == null || SelectedLevel == level)
-                return;
+            // if (level == null || SelectedLevel == level)
+            //     return;
 
             SelectedLevel = level;
             SelectedLevelChanged?.Invoke(level);
+        }
+
+        public void SetSelectedVehicle(VehicleConfig vehicle)
+        {
+            // Debug.LogError($"[LobbySessionService] {vehicle}");
+            // if (vehicle == null || SelectedVehicle == vehicle)
+            // {
+            //     return;
+            // }
+
+            SelectedVehicle = vehicle;
+            SelectedVehicleChanged?.Invoke(vehicle);
         }
 
         public void ConnectToServer(IPEndPoint endPoint)

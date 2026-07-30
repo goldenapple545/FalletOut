@@ -1769,9 +1769,9 @@ MonoBehaviour:
   decelerationMultiplier: 2
   handbrakeDriftMultiplier: 1
   bodyMassCenter: {x: 0, y: -0.5, z: 0}
-  maxHealth: 80
+  maxHealth: 40
   minimumImpactSpeed: 4
-  damagePerSpeed: 6
+  damagePerSpeed: 2
   pairCooldownSeconds: 0.5
 --- !u!54 &7352391912638044952
 Rigidbody:
@@ -1853,7 +1853,7 @@ MonoBehaviour:
   _spectatorInterpolation: 2
   _enableTeleport: 0
   _teleportThreshold: 1
-  <PrefabId>k__BackingField: 0
+  <PrefabId>k__BackingField: 4
   <SpawnableCollectionId>k__BackingField: 0
   <AssetPathHash>k__BackingField: 2988623189458458933
   SceneId: 0
@@ -1887,7 +1887,7 @@ MonoBehaviour:
   _initializeOrder: 0
   _preventDespawnOnDisconnect: 0
   _defaultDespawnType: 0
-  _initializedTimestamp: -8584163474757737941
+  _initializedTimestamp: -8584162150710988366
 --- !u!114 &3112220271104262623
 MonoBehaviour:
   m_ObjectHideFlags: 0

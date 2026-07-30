@@ -10,16 +10,18 @@ namespace CodeBase.CodeBase.Infrastructure.Services.StaticData
     public sealed class StaticDataService : IStaticDataService
     {
         private const string MatchRulesConfigPath = "StaticData/MatchRulesConfig";
-        private const string LevelsRegistryPath = "StaticData/LevelsRegistry";
+        private const string LevelsRegistryPath = "StaticData/Levels/LevelsRegistry";
+        private const string VehiclesRegistryPath = "StaticData/Vehicles/VehiclesRegistry";
 
         public MatchRulesConfig MatchRulesConfig { get; private set; }
         public LevelsRegistry LevelsRegistry { get; private set; }
+        public VehiclesRegistry VehiclesRegistry { get; private set; }
 
         public async UniTask WarmupAsync(CancellationToken ct)
         {
             MatchRulesConfig = await LoadAsync<MatchRulesConfig>(MatchRulesConfigPath, ct);
             LevelsRegistry = await LoadAsync<LevelsRegistry>(LevelsRegistryPath, ct);
-            Debug.Log(LevelsRegistry);
+            VehiclesRegistry = await LoadAsync<VehiclesRegistry>(VehiclesRegistryPath, ct);
         }
 
         private static async UniTask<T> LoadAsync<T>(string path, CancellationToken ct)

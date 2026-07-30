@@ -27,7 +27,7 @@ Transform:
   m_GameObject: {fileID: 108201452196878998}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.07000001, y: -0.00999999, z: -0.102841735}
+  m_LocalPosition: {x: -0.07000001, y: 0.07, z: -0.102841735}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -786,7 +786,7 @@ Transform:
   m_GameObject: {fileID: 3685501377731879139}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: -0.00999999, z: -0.102841735}
+  m_LocalPosition: {x: 0, y: 0.06999999, z: -0.102841735}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1425,7 +1425,7 @@ Transform:
   m_GameObject: {fileID: 4548004521643008157}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.07000001, y: -0.00999999, z: -0.102841735}
+  m_LocalPosition: {x: -0.07000001, y: 0.06999999, z: -0.102841735}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1700,7 +1700,7 @@ MonoBehaviour:
   bodyMassCenter: {x: 0, y: -0.5, z: 0}
   maxHealth: 60
   minimumImpactSpeed: 4
-  damagePerSpeed: 6
+  damagePerSpeed: 4
   pairCooldownSeconds: 0.5
 --- !u!54 &7352391912638044952
 Rigidbody:
@@ -1816,7 +1816,7 @@ MonoBehaviour:
   _initializeOrder: 0
   _preventDespawnOnDisconnect: 0
   _defaultDespawnType: 0
-  _initializedTimestamp: -8584163059132927373
+  _initializedTimestamp: -8584162150710988366
 --- !u!114 &3112220271104262623
 MonoBehaviour:
   m_ObjectHideFlags: 0

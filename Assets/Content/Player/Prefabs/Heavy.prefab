@@ -1538,7 +1538,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: CodeBase::CodeBase.Gameplay.Car.VehicleStats
   maxSpeed: 80
   maxReverseSpeed: 30
-  accelerationMultiplier: 5
+  accelerationMultiplier: 500
   maxSteeringAngle: 30
   steeringSpeed: 0.4
   brakeForce: 1000
@@ -1629,7 +1629,7 @@ MonoBehaviour:
   _spectatorInterpolation: 2
   _enableTeleport: 0
   _teleportThreshold: 1
-  <PrefabId>k__BackingField: 0
+  <PrefabId>k__BackingField: 9
   <SpawnableCollectionId>k__BackingField: 0
   <AssetPathHash>k__BackingField: 7968868647403948675
   SceneId: 0
@@ -1663,7 +1663,7 @@ MonoBehaviour:
   _initializeOrder: 0
   _preventDespawnOnDisconnect: 0
   _defaultDespawnType: 0
-  _initializedTimestamp: -8584163474757737941
+  _initializedTimestamp: -8584162090199176076
 --- !u!114 &3112220271104262623
 MonoBehaviour:
   m_ObjectHideFlags: 0

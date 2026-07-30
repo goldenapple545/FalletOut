@@ -40,9 +40,10 @@ namespace CodeBase.Gameplay.Network.UI
             int defaultIndex = levels.IndexOf(_staticDataService.LevelsRegistry.Levels[0]);
             if (defaultIndex < 0) defaultIndex = 0;
             
-            levelDropdown.SetValueWithoutNotify(defaultIndex);
+            levelDropdown.value = defaultIndex;
             levelDropdown.RefreshShownValue();
             levelDropdown.onValueChanged.AddListener(OnLevelSelected);
+            OnLevelSelected(defaultIndex);
 
             UpdatePreview(_staticDataService.LevelsRegistry.Levels[0]);
         }
@@ -55,8 +56,8 @@ namespace CodeBase.Gameplay.Network.UI
 
         private void OnLevelSelected(int index)
         {
-            if (_staticDataService.LevelsRegistry == null || index < 0 || index >= _staticDataService.LevelsRegistry.Levels.Count)
-                return;
+            // if (_staticDataService.LevelsRegistry == null || index < 0 || index >= _staticDataService.LevelsRegistry.Levels.Count)
+            //     return;
 
             var level = _staticDataService.LevelsRegistry.Levels[index];
             _lobbyService.SetSelectedLevel(level);
