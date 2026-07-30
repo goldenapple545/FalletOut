@@ -1,8 +1,8 @@
 ﻿using UnityEngine;
 
-namespace CodeBase.Gameplay.Car
+namespace CodeBase.CodeBase.Gameplay.Car
 {
-    public sealed class CameraFollow : MonoBehaviour
+    public sealed class LookCameraFollow : MonoBehaviour, ICameraFollow
     {
         [Header("Temporary target for scene setup")]
         [SerializeField] private Transform carTransform;

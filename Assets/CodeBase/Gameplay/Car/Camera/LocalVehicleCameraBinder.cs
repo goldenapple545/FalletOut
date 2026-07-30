@@ -1,4 +1,5 @@
-﻿using CodeBase.Infrastructure.Services.SceneLoader;
+﻿using CodeBase.CodeBase.Gameplay.Car;
+using CodeBase.Infrastructure.Services.SceneLoader;
 using FishNet.Object;
 using UnityEngine;
 using Zenject;
@@ -10,7 +11,7 @@ namespace CodeBase.Gameplay.Car
         [SerializeField] private Transform followPoint;
 
         private IGameplaySceneLifecycle _sceneLifecycle;
-        private CameraFollow _cameraFollow;
+        private ICameraFollow _сameraFollow;
 
         [Inject]
         private void Construct(IGameplaySceneLifecycle sceneLifecycle)
@@ -47,12 +48,12 @@ namespace CodeBase.Gameplay.Car
 
         private void BindCamera()
         {
-            if (!IsOwner || _cameraFollow != null)
+            if (!IsOwner || _сameraFollow != null)
                 return;
 
-            _cameraFollow = FindFirstObjectByType<CameraFollow>();
+            FindCamera();
 
-            if (_cameraFollow == null)
+            if (_сameraFollow == null)
             {
                 Debug.LogError(
                     "[LocalPlayerCameraTarget] Gameplay scene is ready, " +
@@ -62,19 +63,34 @@ namespace CodeBase.Gameplay.Car
                 return;
             }
 
-            _cameraFollow.SetTarget(
+            _сameraFollow.SetTarget(
                 followPoint != null
                     ? followPoint
                     : transform);
         }
 
+        private void FindCamera()
+        {
+            var candidates = FindObjectsByType<MonoBehaviour>(
+                FindObjectsInactive.Exclude, FindObjectsSortMode.None);
+
+            foreach (var c in candidates)
+            {
+                if (c is ICameraFollow follow)
+                {
+                    _сameraFollow = follow;
+                    break;
+                }
+            }
+        }
+
         private void UnbindCamera()
         {
-            if (_cameraFollow == null)
+            if (_сameraFollow == null)
                 return;
 
-            _cameraFollow.SetTarget(null);
-            _cameraFollow = null;
+            _сameraFollow.SetTarget(null);
+            _сameraFollow = null;
         }
 
         private void Unsubscribe()
